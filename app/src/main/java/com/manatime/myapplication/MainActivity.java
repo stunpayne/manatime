@@ -1,30 +1,55 @@
 package com.manatime.myapplication;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.manatime.common.Constants;
 import com.manatime.google.SignInHandler;
 
-public class MainActivity extends AppCompatActivity {
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import dagger.android.support.DaggerAppCompatActivity;
+
+public class MainActivity extends DaggerAppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
   private ManatimeService manatimeService;
-  private SignInHandler signInHandler;
+
+  @Inject
+  SignInHandler signInHandler;
+
+  @Inject
+  String test;
+
+  @Inject
+  Boolean getApp;
+
+  @Inject
+  Context appContext;
+
+  @Inject
+  public MainActivity() {
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    Log.d("DAGGER", "MainActivity hash: " + hashCode());
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    this.signInHandler = new SignInHandler(this);
     manatimeService = new ManatimeService(this, this.signInHandler);
 
     setupGoogleSignIn();
+
+    Log.d("DAGGER", "onCreate string: " + test);
+    Log.d("DAGGER", "onCreate boolean: " + getApp);
+    Log.d("DAGGER", "onCreate appContext: " + appContext.hashCode());
   }
 
   @Override

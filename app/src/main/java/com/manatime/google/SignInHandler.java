@@ -1,6 +1,8 @@
 package com.manatime.google;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
@@ -17,14 +19,18 @@ import com.manatime.myapplication.GoogleCalendarFetcher;
 
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 public class SignInHandler {
 
   private final Activity activity;
 
   private static final String TAG = SignInHandler.class.getSimpleName();
 
-  public SignInHandler(Activity activity) {
-    this.activity = activity;
+  @Inject
+  public SignInHandler(Application application) {
+    Log.d("DAGGER", "ManatimeApplication hash in SignInHandler: " + application.hashCode());
+    this.activity = null;
   }
 
   public View.OnClickListener createSignInButtonListener() {

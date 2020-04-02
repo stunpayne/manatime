@@ -21,7 +21,7 @@ public class ManatimeService {
     this.activity = activity;
     this.signInHandler = signInHandler;
     this.accountService = new AccountService();
-    this.eventService = new CalendarEventService();
+    this.eventService = new CalendarEventService(null);
   }
 
   /** Perform all activities needed to be done at the beginning of the app start. */
