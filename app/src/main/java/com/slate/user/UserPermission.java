@@ -1,4 +1,4 @@
-package com.manatime.myapplication;
+package com.slate.user;
 
 import android.Manifest;
 import android.app.Activity;

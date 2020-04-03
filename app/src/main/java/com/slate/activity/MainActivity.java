@@ -1,17 +1,18 @@
-package com.manatime.myapplication;
-
-import androidx.annotation.Nullable;
+package com.slate.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.manatime.common.Constants;
-import com.manatime.google.SignInHandler;
+import androidx.annotation.Nullable;
+
+import com.slate.common.Constants;
+import com.slate.service.ManatimeService;
+import com.slate.user.SignInHandler;
+import com.slate.user.UserPermission;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
@@ -19,7 +20,8 @@ public class MainActivity extends DaggerAppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  private ManatimeService manatimeService;
+  @Inject
+  ManatimeService manatimeService;
 
   @Inject
   SignInHandler signInHandler;
@@ -43,7 +45,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    manatimeService = new ManatimeService(this, this.signInHandler);
+    manatimeService = new ManatimeService(this.signInHandler);
 
     setupGoogleSignIn();
 
@@ -59,7 +61,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     //  Request calendar permissions from the user
     UserPermission.requestCalendarPermissions(this);
 
-    manatimeService.startService();
+    manatimeService.startService(this);
   }
 
   @Override
@@ -68,13 +70,13 @@ public class MainActivity extends DaggerAppCompatActivity {
 
     // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
     if (requestCode == Constants.IntentRC.SIGN_IN) {
-      manatimeService.handleSignIn(data);
+      manatimeService.handleSignIn(data, this);
     }
   }
 
   private void setupGoogleSignIn() {
 
     findViewById(R.id.sign_in_button)
-        .setOnClickListener(signInHandler.createSignInButtonListener());
+        .setOnClickListener(signInHandler.createSignInButtonListener(this));
   }
 }

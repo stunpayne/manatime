@@ -1,4 +1,4 @@
-package com.manatime.qualifiers;
+package com.slate.qualifiers;
 
 import javax.inject.Qualifier;
 

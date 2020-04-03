@@ -1,4 +1,4 @@
-package com.manatime.scopes;
+package com.slate.scopes;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,4 +1,4 @@
-package com.manatime.myapplication;
+package com.slate.activity;
 
 import org.junit.Test;
 

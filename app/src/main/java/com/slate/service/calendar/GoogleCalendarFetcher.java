@@ -1,14 +1,15 @@
-package com.manatime.myapplication;
+package com.slate.service.calendar;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.slate.activity.R;
 
 import java.util.Date;
 import java.util.Optional;
@@ -18,13 +19,17 @@ public class GoogleCalendarFetcher {
 
   private static final String TAG = GoogleCalendarFetcher.class.getSimpleName();
 
-  private final Context context;
-  private final Activity activity;
+  private final ContentResolver contentResolver;
   private final String email;
 
-  public GoogleCalendarFetcher(Context context, Activity activity, String email) {
-    this.context = context;
-    this.activity = activity;
+  /**
+   * Creates a GoogleCalendarFetcher
+   *
+   * @param contentResolver the Application Context
+   * @param email the user's email
+   */
+  public GoogleCalendarFetcher(ContentResolver contentResolver, String email) {
+    this.contentResolver = contentResolver;
     this.email = email;
   }
 
@@ -57,10 +62,8 @@ public class GoogleCalendarFetcher {
   private static final int PROJECTION_OWNER_ACCOUNT_INDEX = 3;
   private static final int PROJECTION_IS_PRIMARY_INDEX = 4;
 
-  public void fetchEvents() {
+  public void fetchEvents(Activity activity) {
     // Run query
-    //    Cursor cur = null;
-    ContentResolver cr = context.getContentResolver();
     String selection =
         "(("
             + Calendars.ACCOUNT_NAME
@@ -73,7 +76,8 @@ public class GoogleCalendarFetcher {
 
     try (@SuppressLint("MissingPermission")
         Cursor cursor =
-            cr.query(Calendars.CONTENT_URI, CAL_PROJECTION, selection, selectionArgs, null)) {
+            contentResolver.query(
+                Calendars.CONTENT_URI, CAL_PROJECTION, selection, selectionArgs, null)) {
 
       Optional.ofNullable(cursor)
           .ifPresent(
@@ -103,24 +107,26 @@ public class GoogleCalendarFetcher {
                     break;
                   }
                 }
-                Optional.ofNullable(primaryCalendarId).ifPresent(id -> getCalendarEvents(cr, id));
+                Optional.ofNullable(primaryCalendarId)
+                    .ifPresent(id -> getCalendarEvents(id, activity));
               });
     }
   }
 
-  private void getCalendarEvents(ContentResolver cr, Long calendarId) {
+  private void getCalendarEvents(Long calendarId, Activity activity) {
     String selection =
         "((" + Events.CALENDAR_ID + " = ?)" + " AND (" + Events.DTSTART + " > ?)" + ")";
     String[] selectionArgs =
         new String[] {calendarId.toString(), String.valueOf(System.currentTimeMillis())};
     try (@SuppressLint("MissingPermission")
         Cursor eventsCur =
-            cr.query(Events.CONTENT_URI, EVENT_PROJECTION, selection, selectionArgs, null)) {
-      printUpcomingEvents(eventsCur);
+            contentResolver.query(
+                Events.CONTENT_URI, EVENT_PROJECTION, selection, selectionArgs, null)) {
+      printUpcomingEvents(eventsCur, activity);
     }
   }
 
-  private void printUpcomingEvents(Cursor eventsCur) {
+  private void printUpcomingEvents(Cursor eventsCur, Activity activity) {
     StringBuilder eventText = new StringBuilder("First 5 Events: \n");
     int count = 0;
 
@@ -138,7 +144,7 @@ public class GoogleCalendarFetcher {
     }
 
     Log.d(TAG, eventText.toString());
-    TextView eventsText = this.activity.findViewById(R.id.event_text);
+    TextView eventsText = activity.findViewById(R.id.event_text);
     eventsText.setText(eventText);
   }
 }

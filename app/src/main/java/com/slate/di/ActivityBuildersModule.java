@@ -1,9 +1,8 @@
-package com.manatime.di;
+package com.slate.di;
 
-import com.manatime.myapplication.MainActivity;
+import com.slate.activity.MainActivity;
 
 import dagger.Module;
-import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 
 @Module

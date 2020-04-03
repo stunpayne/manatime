@@ -1,13 +1,9 @@
-package com.manatime.di;
+package com.slate.di;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.util.Log;
-
-import com.manatime.google.SignInHandler;
-import com.manatime.myapplication.MainActivity;
-
-import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -31,9 +27,8 @@ public class AppModule {
     return application.getApplicationContext();
   }
 
-//  @Provides
-//  static SignInHandler signInHandler(Application application)  {
-//    Log.d("DAGGER", "application hash: " + application.hashCode());
-//    return new SignInHandler(null, application);
-//  }
+  @Provides
+  static ContentResolver provideContentResolver(Application application)  {
+    return application.getContentResolver();
+  }
 }

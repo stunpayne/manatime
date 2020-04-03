@@ -1,4 +1,4 @@
-package com.manatime.common;
+package com.slate.common;
 
 public class Constants {
 

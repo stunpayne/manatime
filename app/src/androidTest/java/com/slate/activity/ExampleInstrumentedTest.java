@@ -1,4 +1,4 @@
-package com.manatime.myapplication;
+package com.slate.activity;
 
 import android.content.Context;
 

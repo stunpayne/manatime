@@ -1,8 +1,8 @@
-package com.manatime.di;
+package com.slate.di;
 
 import android.app.Application;
 
-import com.manatime.ManatimeApplication;
+import com.slate.ManatimeApplication;
 
 import javax.inject.Singleton;
 
