@@ -13,7 +13,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.slate.common.Constants;
-import com.slate.service.calendar.GoogleCalendarFetcher;
 
 import java.util.Optional;
 

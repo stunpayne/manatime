@@ -4,15 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 
 import android.util.Log;
+import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
-import com.google.api.services.calendar.model.Event;
+import com.slate.activity.R;
 import com.slate.models.calendar.Calendar;
 import com.slate.models.calendar.CalendarEvent;
 import com.slate.models.calendar.CalendarEventRequest;
 import com.slate.service.calendar.CalendarService;
-import com.slate.service.calendar.GoogleCalendarFetcher;
 import com.slate.user.SignInHandler;
 
 import java.util.List;
@@ -50,17 +50,14 @@ public class ManatimeService {
     Optional.ofNullable(signInHandler.handleSignInResult(signInTask, activity))
         .ifPresent(
             account -> {
-              //              GoogleCalendarFetcher googleCalendarFetcher =
-              //                  new GoogleCalendarFetcher(activity.getContentResolver(),
-              // account.getEmail());
-              //              googleCalendarFetcher.fetchEvents(activity);
-
               Calendar primaryCalendar = calendarService.getPrimaryCalendar(account.getEmail());
               Log.d(TAG, "calendar: " + primaryCalendar);
               List<CalendarEvent> calendarEvents =
                   calendarService.getCalendarEvents(
                       getCalendarEventRequest(primaryCalendar, account.getEmail()));
               Log.d(TAG, "handleSignIn: " + calendarEvents);
+              TextView eventsText = (TextView) activity.findViewById(R.id.event_text);
+              eventsText.setText(calendarEvents.toString());
             });
   }
 

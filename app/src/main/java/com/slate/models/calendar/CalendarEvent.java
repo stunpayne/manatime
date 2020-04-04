@@ -1,5 +1,7 @@
 package com.slate.models.calendar;
 
+import java.util.Date;
+
 public class CalendarEvent {
   private String id;
   private String calendarId;
@@ -156,8 +158,8 @@ public class CalendarEvent {
         ", location='" + location + '\'' +
         ", timeZone='" + timeZone + '\'' +
         ", status='" + status + '\'' +
-        ", startTime=" + startTime +
-        ", endTime=" + endTime +
+        ", startTime=" + new Date(startTime).toString() +
+        ", endTime=" + new Date(endTime).toString() +
         '}';
   }
 }
