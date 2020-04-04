@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 
-/** */
+/** An implementation of the CalendarService interface for the Google Calendar */
 public class GoogleCalendarService implements CalendarService {
 
-  private static final String TAG = GoogleCalendarService.class.getSimpleName();
+  private static final String GOOGLE_PKG_NAME = "com.google";
 
   // Projection array. Creating indices for this array instead of doing
   // dynamic lookups improves performance.
@@ -77,11 +77,17 @@ public class GoogleCalendarService implements CalendarService {
     this.contentResolver = contentResolver;
   }
 
+  /**
+   * Provides information on a user's primary Google calendar - the one owned by the user
+   *
+   * @param accountName the email ID of the user
+   * @return a Calendar object containing info about the user's primary Google calendar
+   */
   @Override
   public Calendar getPrimaryCalendar(String accountName) {
 
     //  Values for the "where part of query
-    String[] selectionArgs = new String[] {accountName, "com.google", accountName};
+    String[] selectionArgs = new String[] {accountName, GOOGLE_PKG_NAME, accountName};
 
     try (@SuppressLint("MissingPermission")
         Cursor cursor =
@@ -102,17 +108,15 @@ public class GoogleCalendarService implements CalendarService {
                   long visible = cur.getLong(CAL_PROJECTION_IS_VISIBLE_INDEX);
                   String timeZone = cur.getString(CAL_PROJECTION_TIMEZONE_INDEX);
 
-                  Calendar calendar =
-                      createCalendar(
-                          String.valueOf(calID),
-                          displayName,
-                          accName,
-                          ownerName,
-                          isPrimary == 1,
-                          timeZone,
-                          visible == 1);
-
-                  return calendar;
+                  return Calendar.builder()
+                      .id(String.valueOf(calID))
+                      .displayName(displayName)
+                      .accountName(accountName)
+                      .ownerAccount(ownerName)
+                      .primary(isPrimary == 1)
+                      .timeZone(timeZone)
+                      .visible(visible == 1)
+                      .build();
                 }
                 return null;
               })
@@ -120,6 +124,12 @@ public class GoogleCalendarService implements CalendarService {
     }
   }
 
+  /**
+   * Provides a list of relevant calendar events on the user's Google calendar
+   *
+   * @param request the CalendarEventRequest containing information to search the calendar DB on
+   * @return a list of relevant calendar events based on the request
+   */
   @Override
   public List<CalendarEvent> getCalendarEvents(CalendarEventRequest request) {
     String selection =
@@ -152,26 +162,12 @@ public class GoogleCalendarService implements CalendarService {
         + " = ?))";
   }
 
-  private Calendar createCalendar(
-      String id,
-      String displayName,
-      String accountName,
-      String ownerAccount,
-      boolean primary,
-      String timeZone,
-      boolean visible) {
-
-    return Calendar.builder()
-        .id(id)
-        .displayName(displayName)
-        .accountName(accountName)
-        .ownerAccount(ownerAccount)
-        .primary(primary)
-        .timeZone(timeZone)
-        .visible(visible)
-        .build();
-  }
-
+  /**
+   * Provides a list of upcoming events on the user's calendar using the given events cursor
+   *
+   * @param eventsCur a cursor pointing to the results of the calendar events search
+   * @return a list of upcoming calendar events
+   */
   private List<CalendarEvent> getUpcomingEvents(Cursor eventsCur) {
     StringBuilder eventText = new StringBuilder("First 5 Events: \n");
     int count = 0;
@@ -195,46 +191,22 @@ public class GoogleCalendarService implements CalendarService {
       eventText.append(printText).append("\n");
 
       calendarEvents.add(
-          getCalEvent(
-              eventId,
-              String.valueOf(calId),
-              title,
-              description,
-              organizer,
-              location,
-              timeZone,
-              status,
-              startTime.getTime(),
-              endTime.getTime()));
+          CalendarEvent.builder()
+              .id(eventId)
+              .calendarId(String.valueOf(calId))
+              .title(title)
+              .description(description)
+              .organizer(organizer)
+              .location(location)
+              .status(status)
+              .timeZone(timeZone)
+              .startTime(startTime.getTime())
+              .endTime(endTime.getTime())
+              .build());
 
       count++;
     }
 
     return calendarEvents;
-  }
-
-  private CalendarEvent getCalEvent(
-      String id,
-      String calendarId,
-      String title,
-      String description,
-      String organizer,
-      String location,
-      String timeZone,
-      String status,
-      Long startTime,
-      Long endTime) {
-    return CalendarEvent.builder()
-        .id(id)
-        .calendarId(calendarId)
-        .title(title)
-        .description(description)
-        .organizer(organizer)
-        .location(location)
-        .status(status)
-        .timeZone(timeZone)
-        .startTime(startTime)
-        .endTime(endTime)
-        .build();
   }
 }
