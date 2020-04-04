@@ -8,7 +8,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.slate.common.Constants;
-import com.slate.service.ManatimeService;
+import com.slate.service.SlateService;
 import com.slate.user.SignInHandler;
 import com.slate.user.UserPermission;
 
@@ -21,15 +21,9 @@ public class MainActivity extends DaggerAppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  @Inject ManatimeService manatimeService;
+  @Inject SlateService slateService;
 
   @Inject SignInHandler signInHandler;
-
-  @Inject String test;
-
-  @Inject Boolean getApp;
-
-  @Inject Context appContext;
 
   @Inject
   public MainActivity() {}
@@ -40,13 +34,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    //    manatimeService = new ManatimeService(this.signInHandler, null);
-
     setupGoogleSignIn();
-
-    Log.d("DAGGER", "onCreate string: " + test);
-    Log.d("DAGGER", "onCreate boolean: " + getApp);
-    Log.d("DAGGER", "onCreate appContext: " + appContext.hashCode());
   }
 
   @Override
@@ -56,7 +44,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     //  Request calendar permissions from the user
     UserPermission.requestCalendarPermissions(this);
 
-    Optional.ofNullable(manatimeService.checkForLogin(this))
+    Optional.ofNullable(slateService.checkForLogin(this))
         .ifPresent(
             account -> {
               //  Disable UI button
@@ -70,7 +58,7 @@ public class MainActivity extends DaggerAppCompatActivity {
 
     // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
     if (requestCode == Constants.IntentRC.SIGN_IN) {
-      manatimeService.handleSignIn(data, this);
+      slateService.handleSignIn(data, this);
     }
   }
 

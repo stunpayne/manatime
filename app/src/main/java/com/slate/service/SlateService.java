@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 
-public class ManatimeService {
+public class SlateService {
 
-  private static final String TAG = ManatimeService.class.getSimpleName();
+  private static final String TAG = SlateService.class.getSimpleName();
 
   private final SignInHandler signInHandler;
   private final CalendarService calendarService;
@@ -29,7 +29,7 @@ public class ManatimeService {
   private GoogleSignInAccount account;
 
   @Inject
-  public ManatimeService(SignInHandler signInHandler, CalendarService calendarService) {
+  public SlateService(SignInHandler signInHandler, CalendarService calendarService) {
     this.signInHandler = signInHandler;
     this.calendarService = calendarService;
   }

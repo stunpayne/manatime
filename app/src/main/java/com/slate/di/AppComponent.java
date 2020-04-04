@@ -2,7 +2,7 @@ package com.slate.di;
 
 import android.app.Application;
 
-import com.slate.ManatimeApplication;
+import com.slate.SlateApplication;
 
 import javax.inject.Singleton;
 
@@ -14,7 +14,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @Singleton
 @Component(
     modules = {AndroidSupportInjectionModule.class, ActivityBuildersModule.class, AppModule.class})
-public interface AppComponent extends AndroidInjector<ManatimeApplication> {
+public interface AppComponent extends AndroidInjector<SlateApplication> {
 
   @Component.Builder
   interface Builder {
