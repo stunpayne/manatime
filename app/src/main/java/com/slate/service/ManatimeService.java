@@ -3,36 +3,72 @@ package com.slate.service;
 import android.app.Activity;
 import android.content.Intent;
 
+import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
-import com.slate.service.calendar.google.GoogleCalendarService;
+import com.google.api.services.calendar.model.Event;
+import com.slate.models.calendar.Calendar;
+import com.slate.models.calendar.CalendarEvent;
+import com.slate.models.calendar.CalendarEventRequest;
+import com.slate.service.calendar.CalendarService;
+import com.slate.service.calendar.GoogleCalendarFetcher;
 import com.slate.user.SignInHandler;
 
+import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 
 public class ManatimeService {
 
+  private static final String TAG = ManatimeService.class.getSimpleName();
+
   private final SignInHandler signInHandler;
-  private final GoogleCalendarService eventService;
+  private final CalendarService calendarService;
+
+  private GoogleSignInAccount account;
 
   @Inject
-  public ManatimeService(SignInHandler signInHandler) {
+  public ManatimeService(SignInHandler signInHandler, CalendarService calendarService) {
     this.signInHandler = signInHandler;
-    this.eventService = new GoogleCalendarService();
+    this.calendarService = calendarService;
   }
 
   /** Perform all activities needed to be done at the beginning of the app start. */
-  public final void startService(Activity activity) {
+  public final GoogleSignInAccount checkForLogin(Activity activity) {
     // Check for existing Google Sign In account, if the user is already signed in
     // the GoogleSignInAccount will be non-null.
-    GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(activity);
+    this.account = GoogleSignIn.getLastSignedInAccount(activity);
+    return this.account;
   }
 
   public final void handleSignIn(Intent intent, Activity activity) {
-    // The Task returned from this call is always completed, no need to attach
-    // a listener.
-    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
-    signInHandler.handleSignInResult(task, activity);
+    // The Task returned from this call is always completed, no need to attach a listener.
+    Task<GoogleSignInAccount> signInTask = GoogleSignIn.getSignedInAccountFromIntent(intent);
+
+    // If the account is present, get the next calendar events
+    Optional.ofNullable(signInHandler.handleSignInResult(signInTask, activity))
+        .ifPresent(
+            account -> {
+              //              GoogleCalendarFetcher googleCalendarFetcher =
+              //                  new GoogleCalendarFetcher(activity.getContentResolver(),
+              // account.getEmail());
+              //              googleCalendarFetcher.fetchEvents(activity);
+
+              Calendar primaryCalendar = calendarService.getPrimaryCalendar(account.getEmail());
+              Log.d(TAG, "calendar: " + primaryCalendar);
+              List<CalendarEvent> calendarEvents =
+                  calendarService.getCalendarEvents(
+                      getCalendarEventRequest(primaryCalendar, account.getEmail()));
+              Log.d(TAG, "handleSignIn: " + calendarEvents);
+            });
+  }
+
+  private CalendarEventRequest getCalendarEventRequest(Calendar cal, String email) {
+    return CalendarEventRequest.builder()
+        .calendarId(cal.getId())
+        .userId(email)
+        .eventAfterTime(System.currentTimeMillis())
+        .build();
   }
 }

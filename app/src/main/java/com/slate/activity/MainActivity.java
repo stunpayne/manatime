@@ -12,6 +12,7 @@ import com.slate.service.ManatimeService;
 import com.slate.user.SignInHandler;
 import com.slate.user.UserPermission;
 
+import java.util.Optional;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
@@ -20,24 +21,18 @@ public class MainActivity extends DaggerAppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  @Inject
-  ManatimeService manatimeService;
+  @Inject ManatimeService manatimeService;
+
+  @Inject SignInHandler signInHandler;
+
+  @Inject String test;
+
+  @Inject Boolean getApp;
+
+  @Inject Context appContext;
 
   @Inject
-  SignInHandler signInHandler;
-
-  @Inject
-  String test;
-
-  @Inject
-  Boolean getApp;
-
-  @Inject
-  Context appContext;
-
-  @Inject
-  public MainActivity() {
-  }
+  public MainActivity() {}
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +40,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    manatimeService = new ManatimeService(this.signInHandler);
+    //    manatimeService = new ManatimeService(this.signInHandler, null);
 
     setupGoogleSignIn();
 
@@ -61,7 +56,12 @@ public class MainActivity extends DaggerAppCompatActivity {
     //  Request calendar permissions from the user
     UserPermission.requestCalendarPermissions(this);
 
-    manatimeService.startService(this);
+    Optional.ofNullable(manatimeService.checkForLogin(this))
+        .ifPresent(
+            account -> {
+              //  Disable UI button
+              //  Prepare current user's calendar
+            });
   }
 
   @Override

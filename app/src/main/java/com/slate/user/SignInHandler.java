@@ -41,25 +41,19 @@ public class SignInHandler {
     };
   }
 
-  public void handleSignInResult(Task<GoogleSignInAccount> completedTask, Activity activity) {
+  public GoogleSignInAccount handleSignInResult(
+      Task<GoogleSignInAccount> completedTask, Activity activity) {
     try {
       GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
       // Signed in successfully, show authenticated UI.
-      Optional.ofNullable(account)
-          .ifPresent(
-              acc -> {
-                String email = acc.getEmail();
-                Log.d(TAG, "Got email: " + email);
-                GoogleCalendarFetcher googleCalendarFetcher =
-                    new GoogleCalendarFetcher(activity.getContentResolver(), email);
-                googleCalendarFetcher.fetchEvents(activity);
-              });
+      return Optional.ofNullable(account).orElse(null);
     } catch (ApiException e) {
       // The ApiException status code indicates the detailed failure reason.
       // Please refer to the GoogleSignInStatusCodes class reference for more information.
       Log.e(TAG, "signInResult:failed code=" + e.getStatusCode());
       Toast.makeText(activity, "Failed to fetch events!", Toast.LENGTH_SHORT).show();
+      return null;
     }
   }
 }
