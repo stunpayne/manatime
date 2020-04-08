@@ -35,7 +35,9 @@ public class SlateService {
     this.calendarService = calendarService;
   }
 
-  /** Perform all activities needed to be done at the beginning of the app start. */
+  /**
+   * Perform all activities needed to be done at the beginning of the app start.
+   */
   public final GoogleSignInAccount checkForLogin(Activity activity) {
     // Check for existing Google Sign In account, if the user is already signed in
     // the GoogleSignInAccount will be non-null.
@@ -53,20 +55,21 @@ public class SlateService {
             account -> {
               Calendar primaryCalendar = calendarService.getPrimaryCalendar(account.getEmail());
               Log.d(TAG, "calendar: " + primaryCalendar);
+
               List<CalendarEvent> calendarEvents =
-                  calendarService.getCalendarEvents(
-                      getCalendarEventRequest(primaryCalendar, account.getEmail()));
+                  calendarService
+                      .getCalendarEvents(getCalendarEventRequest(primaryCalendar.getId()));
               Log.d(TAG, "handleSignIn: " + calendarEvents);
+
               TextView eventsText = (TextView) activity.findViewById(R.id.event_text);
               eventsText.setText(calendarEvents.toString());
             });
   }
 
-  private CalendarEventRequest getCalendarEventRequest(Calendar cal, String email) {
+  private CalendarEventRequest getCalendarEventRequest(String calId) {
     long now = System.currentTimeMillis();
     return CalendarEventRequest.builder()
-        .calendarId(cal.getId())
-        .userId(email)
+        .calendarId(calId)
         .endTimeAfter(now)
         .startTimeBefore(now + 5 * ONE_DAY_MILLIS)
         .build();

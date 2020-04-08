@@ -55,8 +55,9 @@ public class MainActivity extends DaggerAppCompatActivity {
     Optional<GoogleSignInAccount> googleSignInAccount = Optional
         .ofNullable(slateService.checkForLogin(this));
     if (googleSignInAccount.isPresent()) {
-      //  Disable UI button
+      //  Disable sign in button
       //  Prepare current user's calendar
+      //  TODO: Remove fragment from here
       showSignInFragment();
     } else {
       showSignInFragment();
