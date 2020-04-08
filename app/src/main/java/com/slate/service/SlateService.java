@@ -22,6 +22,7 @@ import javax.inject.Inject;
 public class SlateService {
 
   private static final String TAG = SlateService.class.getSimpleName();
+  private static final Long ONE_DAY_MILLIS = 24 * 60 * 60 * 1000L;
 
   private final SignInHandler signInHandler;
   private final CalendarService calendarService;
@@ -62,10 +63,12 @@ public class SlateService {
   }
 
   private CalendarEventRequest getCalendarEventRequest(Calendar cal, String email) {
+    long now = System.currentTimeMillis();
     return CalendarEventRequest.builder()
         .calendarId(cal.getId())
         .userId(email)
-        .eventAfterTime(System.currentTimeMillis())
+        .endTimeAfter(now)
+        .startTimeBefore(now + 5 * ONE_DAY_MILLIS)
         .build();
   }
 }

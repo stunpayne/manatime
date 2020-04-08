@@ -1,22 +1,23 @@
 package com.slate.models.calendar;
 
 public class CalendarEventRequest {
+
   private static final int DEFAULT_NUMBER_EVENTS = 10;
 
-  String calendarId;
-  String userId;
-  Long eventAfterTime;
-  int numberOfEvents;
+  private String calendarId;
+  private Long endTimeAfter;
+  private Long startTimeBefore;
+  private int numberOfEvents;
 
-  public CalendarEventRequest(String calendarId, String userId, Long eventAfterTime) {
-    this(calendarId, userId, eventAfterTime, DEFAULT_NUMBER_EVENTS);
+  private CalendarEventRequest(String calendarId, Long endTimeAfter, Long startTimeBefore) {
+    this(calendarId, endTimeAfter, startTimeBefore, DEFAULT_NUMBER_EVENTS);
   }
 
-  public CalendarEventRequest(
-      String calendarId, String userId, Long eventAfterTime, int numberOfEvents) {
+  private CalendarEventRequest(String calendarId, Long endTimeAfter, Long startTimeBefore,
+      int numberOfEvents) {
     this.calendarId = calendarId;
-    this.userId = userId;
-    this.eventAfterTime = eventAfterTime;
+    this.endTimeAfter = endTimeAfter;
+    this.startTimeBefore = startTimeBefore;
     this.numberOfEvents = numberOfEvents;
   }
 
@@ -32,20 +33,12 @@ public class CalendarEventRequest {
     this.calendarId = calendarId;
   }
 
-  public String getUserId() {
-    return userId;
+  public Long getEndTimeAfter() {
+    return endTimeAfter;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  public Long getEventAfterTime() {
-    return eventAfterTime;
-  }
-
-  public void setEventAfterTime(Long eventAfterTime) {
-    this.eventAfterTime = eventAfterTime;
+  public void setEndTimeAfter(Long endTimeAfter) {
+    this.endTimeAfter = endTimeAfter;
   }
 
   public int getNumberOfEvents() {
@@ -58,25 +51,26 @@ public class CalendarEventRequest {
 
   public static final class Builder {
 
-    String calendarId;
-    String userId;
-    Long eventAfterTime;
-    int numberOfEvents;
+    private String calendarId;
+    private Long endTimeAfter;
+    private Long startTimeBefore;
+    private int numberOfEvents;
 
-    private Builder() {}
+    private Builder() {
+    }
 
     public Builder calendarId(String calendarId) {
       this.calendarId = calendarId;
       return this;
     }
 
-    public Builder userId(String userId) {
-      this.userId = userId;
+    public Builder endTimeAfter(Long endTimeAfter) {
+      this.endTimeAfter = endTimeAfter;
       return this;
     }
 
-    public Builder eventAfterTime(Long eventAfterTime) {
-      this.eventAfterTime = eventAfterTime;
+    public Builder startTimeBefore(Long startTimeBefore) {
+      this.startTimeBefore = startTimeBefore;
       return this;
     }
 
@@ -85,9 +79,14 @@ public class CalendarEventRequest {
       return this;
     }
 
+    public Builder noLimit()  {
+      this.numberOfEvents = Integer.MAX_VALUE;
+      return this;
+    }
+
     public CalendarEventRequest build() {
       CalendarEventRequest calendarEventRequest =
-          new CalendarEventRequest(calendarId, userId, eventAfterTime);
+          new CalendarEventRequest(calendarId, endTimeAfter, startTimeBefore);
       calendarEventRequest.setNumberOfEvents(numberOfEvents);
       return calendarEventRequest;
     }
@@ -97,8 +96,7 @@ public class CalendarEventRequest {
   public String toString() {
     return "CalendarEventRequest{" +
         "calendarId='" + calendarId + '\'' +
-        ", userId='" + userId + '\'' +
-        ", eventAfterTime=" + eventAfterTime +
+        ", endTimeAfter=" + endTimeAfter +
         ", numberOfEvents=" + numberOfEvents +
         '}';
   }

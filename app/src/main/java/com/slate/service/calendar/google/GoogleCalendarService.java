@@ -135,7 +135,7 @@ public class GoogleCalendarService implements CalendarService {
     String selection =
         "((" + Events.CALENDAR_ID + " = ?)" + " AND (" + Events.DTSTART + " > ?)" + ")";
     String[] selectionArgs =
-        new String[] {request.getCalendarId(), String.valueOf(request.getEventAfterTime())};
+        new String[] {request.getCalendarId(), String.valueOf(request.getEndTimeAfter())};
 
     try (@SuppressLint("MissingPermission")
         Cursor eventsCur =
