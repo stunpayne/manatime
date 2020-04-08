@@ -7,7 +7,11 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.slate.common.Constants;
+import com.slate.fragments.SignInFragment;
 import com.slate.service.SlateService;
 import com.slate.user.SignInHandler;
 import com.slate.user.UserPermission;
@@ -21,20 +25,24 @@ public class MainActivity extends DaggerAppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
-  @Inject SlateService slateService;
-
-  @Inject SignInHandler signInHandler;
+  @Inject
+  SlateService slateService;
 
   @Inject
-  public MainActivity() {}
+  SignInHandler signInHandler;
+
+  @Inject
+  SignInFragment signInFragment;
+
+  @Inject
+  public MainActivity() {
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     Log.d("DAGGER", "MainActivity hash: " + hashCode());
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
-    setupGoogleSignIn();
   }
 
   @Override
@@ -44,12 +52,15 @@ public class MainActivity extends DaggerAppCompatActivity {
     //  Request calendar permissions from the user
     UserPermission.requestCalendarPermissions(this);
 
-    Optional.ofNullable(slateService.checkForLogin(this))
-        .ifPresent(
-            account -> {
-              //  Disable UI button
-              //  Prepare current user's calendar
-            });
+    Optional<GoogleSignInAccount> googleSignInAccount = Optional
+        .ofNullable(slateService.checkForLogin(this));
+    if (googleSignInAccount.isPresent()) {
+      //  Disable UI button
+      //  Prepare current user's calendar
+      showSignInFragment();
+    } else {
+      showSignInFragment();
+    }
   }
 
   @Override
@@ -62,9 +73,10 @@ public class MainActivity extends DaggerAppCompatActivity {
     }
   }
 
-  private void setupGoogleSignIn() {
-
-    findViewById(R.id.sign_in_button)
-        .setOnClickListener(signInHandler.createSignInButtonListener(this));
+  private void showSignInFragment() {
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    FragmentTransaction transaction = fragmentManager.beginTransaction();
+    transaction.replace(R.id.main_container, signInFragment);
+    transaction.commit();
   }
 }
