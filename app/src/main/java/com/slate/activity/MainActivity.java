@@ -42,9 +42,6 @@ public class MainActivity extends DaggerAppCompatActivity {
   HomeScreenFragment homeScreenFragment;
 
   @Inject
-  CreateTaskFragment createTaskFragment;
-
-  @Inject
   public MainActivity() {
   }
 
@@ -74,7 +71,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     return v -> {
       Log.d(TAG, "showCreateTaskDialogCallback!");
       getSupportFragmentManager().popBackStack();
-      createTaskFragment.show(getSupportFragmentManager(), "new_task_dialog");
+      new CreateTaskFragment().show(getSupportFragmentManager(), "create_task_dialog");
     };
   }
 

@@ -14,6 +14,6 @@
   <!-- Deadline Fill Values -->
   <string name="dl_date_fill">%s/%s/%s</string>
   <string name="dl_time_fill">%s:%s:%s</string>
-  <string name="create_task_button">CREATE TASK</string>
+  <string name="create_task_button">SKED TASK</string>
 
 </resources>

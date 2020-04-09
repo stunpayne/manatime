@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.google.android.material.textfield.TextInputLayout;
 import com.slate.activity.R;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateSetListener;
@@ -57,6 +58,9 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
 
     deadlineTime = getDialog().findViewById(R.id.create_task_dl_time_actual);
     deadlineTime.setOnClickListener(getTimeOnClickListener(now));
+
+    getDialog().findViewById(R.id.submit_task)
+        .setOnClickListener(getButtonOnClickListener());
   }
 
 
@@ -119,7 +123,30 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
       );
       timePicker.setVersion(TimePickerDialog.Version.VERSION_2);
       timePicker.setOnTimeSetListener(this);
-      timePicker.show(getActivity().getSupportFragmentManager(), "Date_Picker");
+      timePicker.show(getActivity().getSupportFragmentManager(), "Time_Picker");
     };
+  }
+
+  @NotNull
+  private OnClickListener getButtonOnClickListener() {
+    return v -> {
+      String taskName = getTextInputLayoutText(R.id.create_task_name);
+      String deadlineDate = getTextInputLayoutText(R.id.create_task_dl_date);
+      String deadlineTime = getTextInputLayoutText(R.id.create_task_dl_time);
+      Integer duration = Integer.valueOf(getTextInputLayoutText(R.id.create_task_duration));
+
+      Log.d(TAG, "getButtonOnClickListener: Task attributed received!");
+    };
+  }
+
+  /**
+   * Returns the text content from any Material TextInputLayout view
+   *
+   * @param textInputLayoutResourceId the resource ID of the material text field
+   * @return the text inside the material text field
+   */
+  private String getTextInputLayoutText(int textInputLayoutResourceId) {
+    return ((TextInputLayout) getDialog().findViewById(textInputLayoutResourceId)).getEditText()
+        .getText().toString();
   }
 }
