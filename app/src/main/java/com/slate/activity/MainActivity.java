@@ -1,22 +1,26 @@
 package com.slate.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.View;
 import androidx.annotation.Nullable;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.slate.common.Constants;
+import com.slate.fragments.CreateTaskFragment;
+import com.slate.fragments.HomeScreenFragment;
 import com.slate.fragments.SignInFragment;
 import com.slate.service.SlateService;
 import com.slate.user.SignInHandler;
 import com.slate.user.UserPermission;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
@@ -35,7 +39,43 @@ public class MainActivity extends DaggerAppCompatActivity {
   SignInFragment signInFragment;
 
   @Inject
+  HomeScreenFragment homeScreenFragment;
+
+  @Inject
+  CreateTaskFragment createTaskFragment;
+
+  @Inject
   public MainActivity() {
+  }
+
+  public FragmentManager fragmentManager() {
+    return getSupportFragmentManager();
+  }
+
+  /**
+   * Once sign in completed, switches the view from sign in button to the home screen
+   *
+   * @return nothing
+   */
+  public Callable<Void> signInCompleteCallback() {
+    return () -> {
+      Log.d(TAG, "SignInCompleteCallback!");
+      showHomeScreenFragment();
+      return null;
+    };
+  }
+
+  /**
+   * When user clicks on the new task button, shows the new task creation dialog to the user
+   *
+   * @return nothing
+   */
+  public View.OnClickListener createTaskButtonListener() {
+    return v -> {
+      Log.d(TAG, "showCreateTaskDialogCallback!");
+      getSupportFragmentManager().popBackStack();
+      createTaskFragment.show(getSupportFragmentManager(), "new_task_dialog");
+    };
   }
 
   @Override
@@ -74,10 +114,21 @@ public class MainActivity extends DaggerAppCompatActivity {
     }
   }
 
+  private void showHomeScreenFragment() {
+    getSupportFragmentManager().popBackStack();
+    replaceFragment(R.id.main_container, homeScreenFragment, true);
+  }
+
   private void showSignInFragment() {
-    FragmentManager fragmentManager = getSupportFragmentManager();
-    FragmentTransaction transaction = fragmentManager.beginTransaction();
-    transaction.replace(R.id.main_container, signInFragment);
+    replaceFragment(R.id.main_container, signInFragment, true);
+  }
+
+  private void replaceFragment(int oldFragmentId, Fragment newFragment, boolean addToBackStack) {
+    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    transaction.replace(oldFragmentId, newFragment);
+    if (addToBackStack) {
+      transaction.addToBackStack(null);
+    }
     transaction.commit();
   }
 }

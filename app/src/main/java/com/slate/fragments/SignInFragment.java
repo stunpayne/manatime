@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.slate.activity.R;
 import com.slate.user.SignInHandler;
 import dagger.android.support.DaggerFragment;
+import java.util.Optional;
 import javax.inject.Inject;
 
 public class SignInFragment extends DaggerFragment {
@@ -39,7 +40,8 @@ public class SignInFragment extends DaggerFragment {
   }
 
   private void setupGoogleSignIn() {
-    getActivity().findViewById(R.id.sign_in_button)
-        .setOnClickListener(signInHandler.createSignInButtonListener(getActivity()));
+    Optional.ofNullable(getActivity().findViewById(R.id.sign_in_button))
+        .ifPresent(view -> ((View) view)
+            .setOnClickListener(signInHandler.createSignInButtonListener(getActivity())));
   }
 }

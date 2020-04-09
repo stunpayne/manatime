@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
+import com.slate.activity.MainActivity;
 import com.slate.activity.R;
 import com.slate.models.calendar.Calendar;
 import com.slate.models.calendar.CalendarEvent;
@@ -17,7 +18,9 @@ import com.slate.user.SignInHandler;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class SlateService {
 
@@ -26,13 +29,16 @@ public class SlateService {
 
   private final SignInHandler signInHandler;
   private final CalendarService calendarService;
+  private final Callable<Void> signInCompleteCallback;
 
   private GoogleSignInAccount account;
 
   @Inject
-  public SlateService(SignInHandler signInHandler, CalendarService calendarService) {
+  public SlateService(SignInHandler signInHandler, CalendarService calendarService,
+      @Named("SIGN_IN") Callable<Void> signInCompleteCallback) {
     this.signInHandler = signInHandler;
     this.calendarService = calendarService;
+    this.signInCompleteCallback = signInCompleteCallback;
   }
 
   /**
@@ -61,9 +67,15 @@ public class SlateService {
                       .getCalendarEvents(getCalendarEventRequest(primaryCalendar.getId()));
               Log.d(TAG, "handleSignIn: " + calendarEvents);
 
-              TextView eventsText = (TextView) activity.findViewById(R.id.event_text);
+              TextView eventsText = activity.findViewById(R.id.event_text);
               eventsText.setText(calendarEvents.toString());
             });
+
+    try {
+      this.signInCompleteCallback.call();
+    } catch (Exception e) {
+      Log.d(TAG, "Error occurred in the sign in complete callback ", e);
+    }
   }
 
   private CalendarEventRequest getCalendarEventRequest(String calId) {

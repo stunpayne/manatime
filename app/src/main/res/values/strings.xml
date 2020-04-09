@@ -1,4 +1,14 @@
 <resources>
-    <string name="app_name">Slate</string>
-    <string name="hello_slate_user">Hello Slate User!</string>
+  <string name="app_name">Slate</string>
+  <string name="hello_slate_user">Hello Slate User!</string>
+  <string name="welcome">Welcome! This is your home screen!</string>
+  <string name="click_to_create">Click the \'+\' button to create a new task</string>
+
+  <!-- Create Task form fields -->
+  <string name="fill_create_form">Fill new task details in the form below</string>
+  <string name="task_name_label">Task Name</string>
+  <string name="task_dl_date_label">Deadline Date</string>
+  <string name="task_dl_time_label">Deadline Time</string>
+  <string name="task_duration_label">Duration (minutes)</string>
+
 </resources>

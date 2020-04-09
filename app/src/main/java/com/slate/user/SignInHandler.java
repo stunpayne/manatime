@@ -23,7 +23,8 @@ public class SignInHandler {
   private static final String TAG = SignInHandler.class.getSimpleName();
 
   @Inject
-  public SignInHandler() {}
+  public SignInHandler() {
+  }
 
   public View.OnClickListener createSignInButtonListener(Activity activity) {
     // Configure sign-in to request the user's ID, email address, and basic

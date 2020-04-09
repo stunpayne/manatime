@@ -5,10 +5,15 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.util.Log;
 
+import android.view.View;
+import androidx.fragment.app.FragmentManager;
+import com.slate.activity.MainActivity;
 import com.slate.service.calendar.CalendarService;
 import com.slate.service.calendar.google.GoogleCalendarService;
 import dagger.Module;
 import dagger.Provides;
+import java.util.concurrent.Callable;
+import javax.inject.Named;
 
 @Module
 public class AppModule {
@@ -35,8 +40,19 @@ public class AppModule {
   }
 
   @Provides
-  static CalendarService provideCalendarService(
-      Application application, ContentResolver contentResolver) {
+  static CalendarService provideCalendarService(ContentResolver contentResolver) {
     return new GoogleCalendarService(contentResolver);
+  }
+
+  @Named("SIGN_IN")
+  @Provides
+  static Callable<Void> signInCompleteCallback(MainActivity activity) {
+    return activity.signInCompleteCallback();
+  }
+
+  @Named("CREATE_TASK")
+  @Provides
+  static View.OnClickListener createTaskButtonListener(MainActivity activity) {
+    return activity.createTaskButtonListener();
   }
 }
