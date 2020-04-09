@@ -12,6 +12,7 @@ import com.slate.common.Constants;
 import com.slate.fragments.CreateTaskFragment;
 import com.slate.fragments.HomeScreenFragment;
 import com.slate.fragments.SignInFragment;
+import com.slate.models.user.SignedInUser;
 import com.slate.service.SchedulingOrchestrator;
 import com.slate.service.SlateService;
 import com.slate.user.SignInHandler;
@@ -39,6 +40,8 @@ public class MainActivity extends DaggerAppCompatActivity {
   @Inject
   SchedulingOrchestrator schedulingOrchestrator;
 
+  private SignedInUser signedInUser;
+
   @Inject
   public MainActivity() {
   }
@@ -52,7 +55,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     return v -> {
       Log.d(TAG, "showCreateTaskDialogCallback!");
       getSupportFragmentManager().popBackStack();
-      new CreateTaskFragment(schedulingOrchestrator)
+      new CreateTaskFragment(schedulingOrchestrator, signedInUser)
           .show(getSupportFragmentManager(), "create_task_dialog");
     };
   }
@@ -92,7 +95,7 @@ public class MainActivity extends DaggerAppCompatActivity {
 
     // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
     if (requestCode == Constants.IntentRC.SIGN_IN) {
-      slateService.handleSignIn(data, this);
+      signedInUser = slateService.handleSignIn(data, this);
       showHomeScreenFragment();
     }
   }

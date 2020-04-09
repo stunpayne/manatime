@@ -25,6 +25,12 @@ public class SignInHandler {
   public SignInHandler() {
   }
 
+  /**
+   * Returns an on click listener for the Sign-In button on the main page
+   *
+   * @param activity the Activity containing the Sign-in button
+   * @return
+   */
   public View.OnClickListener createSignInButtonListener(Activity activity) {
     // Configure sign-in to request the user's ID, email address, and basic
     // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -40,6 +46,13 @@ public class SignInHandler {
     };
   }
 
+  /**
+   * Returns details of the user once they've signed in
+   *
+   * @param completedTask the result of the Sign In intent
+   * @param activity      the Activity containing the Sign-in button
+   * @return
+   */
   public SignedInUser getSignedInAccount(Task<GoogleSignInAccount> completedTask,
       Activity activity) {
     try {

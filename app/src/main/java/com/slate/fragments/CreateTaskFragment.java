@@ -17,12 +17,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 import com.slate.activity.R;
+import com.slate.models.task.Task;
+import com.slate.models.user.SignedInUser;
 import com.slate.service.SchedulingOrchestrator;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateSetListener;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog.OnTimeSetListener;
 import dagger.android.support.DaggerDialogFragment;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,14 +35,19 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
 
   private static final String TAG = CreateTaskFragment.class.getSimpleName();
   private static final double WIDTH_PERCENT = 0.85;
+  private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+  private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
   private final SchedulingOrchestrator schedulingOrchestrator;
+  private final SignedInUser signedInUser;
 
   private EditText deadlineDate;
   private EditText deadlineTime;
 
-  public CreateTaskFragment(SchedulingOrchestrator schedulingOrchestrator) {
+  public CreateTaskFragment(SchedulingOrchestrator schedulingOrchestrator,
+      SignedInUser signedInUser) {
     this.schedulingOrchestrator = schedulingOrchestrator;
+    this.signedInUser = signedInUser;
   }
 
   @Nullable
@@ -136,10 +145,11 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
       String deadlineDate = getTextInputLayoutText(R.id.create_task_dl_date);
       String deadlineTime = getTextInputLayoutText(R.id.create_task_dl_time);
       Integer duration = Integer.valueOf(getTextInputLayoutText(R.id.create_task_duration));
+      Task newTask = createTask(taskName, deadlineDate, deadlineTime, duration);
 
       Log.d(TAG, "getButtonOnClickListener: Task attributed received!");
 
-      this.schedulingOrchestrator.scheduleTask(null, null);
+      this.schedulingOrchestrator.scheduleTask(signedInUser.getEmail(), newTask);
     };
   }
 
@@ -152,5 +162,43 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
   private String getTextInputLayoutText(int textInputLayoutResourceId) {
     return ((TextInputLayout) getDialog().findViewById(textInputLayoutResourceId)).getEditText()
         .getText().toString();
+  }
+
+  /**
+   * Returns a task object that can be scheduled on the user's calendar
+   */
+  private Task createTask(String taskName, String deadlineDate, String deadlineTime,
+      Integer duration) {
+    Calendar deadlineTimeCal = getTimeAsCalendar(deadlineTime);
+    Calendar deadline = toCalendar(deadlineDate);
+    deadline.set(Calendar.HOUR_OF_DAY, deadlineTimeCal.get(Calendar.HOUR_OF_DAY));
+    deadline.set(Calendar.MINUTE, deadlineTimeCal.get(Calendar.MINUTE));
+    deadline.set(Calendar.SECOND, deadlineTimeCal.get(Calendar.SECOND));
+
+    return Task.builder()
+        .name(taskName)
+        .deadline(deadline.getTime())
+        .durationMinutes(Long.valueOf(duration))
+        .build();
+  }
+
+  private Calendar toCalendar(String date) {
+    Calendar calendar = Calendar.getInstance();
+    try {
+      calendar.setTime(dateFormat.parse(date));
+    } catch (ParseException e) {
+      Log.e(TAG, "Error while parsing date string", e);
+    }
+    return calendar;
+  }
+
+  private Calendar getTimeAsCalendar(String time) {
+    Calendar calendar = Calendar.getInstance();
+    try {
+      calendar.setTime(timeFormat.parse(time));
+    } catch (ParseException e) {
+      Log.e(TAG, "Error while parsing date string", e);
+    }
+    return calendar;
   }
 }
