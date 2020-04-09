@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -13,9 +12,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.slate.common.Constants;
-
+import com.slate.models.user.GoogleUser;
+import com.slate.models.user.SignedInUser;
 import java.util.Optional;
-
 import javax.inject.Inject;
 
 public class SignInHandler {
@@ -41,13 +40,15 @@ public class SignInHandler {
     };
   }
 
-  public GoogleSignInAccount handleSignInResult(
-      Task<GoogleSignInAccount> completedTask, Activity activity) {
+  public SignedInUser getSignedInAccount(Task<GoogleSignInAccount> completedTask,
+      Activity activity) {
     try {
       GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
       // Signed in successfully, show authenticated UI.
-      return Optional.ofNullable(account).orElse(null);
+      return Optional.ofNullable(account)
+          .map(acc -> GoogleUser.builder().account(acc).build())
+          .orElse(null);
     } catch (ApiException e) {
       // The ApiException status code indicates the detailed failure reason.
       // Please refer to the GoogleSignInStatusCodes class reference for more information.

@@ -1,9 +1,6 @@
 package com.slate;
 
-import android.util.Log;
-
 import com.slate.di.DaggerAppComponent;
-
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
 

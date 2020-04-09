@@ -4,7 +4,6 @@ import com.slate.models.calendar.Calendar;
 import com.slate.models.calendar.CalendarEvent;
 import com.slate.models.calendar.CalendarEventRequest;
 import com.slate.service.calendar.google.GoogleCalendarService;
-
 import java.util.List;
 
 /**

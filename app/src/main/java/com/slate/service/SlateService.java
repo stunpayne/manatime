@@ -2,20 +2,18 @@ package com.slate.service;
 
 import android.app.Activity;
 import android.content.Intent;
-
 import android.util.Log;
 import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
-import com.slate.activity.MainActivity;
 import com.slate.activity.R;
 import com.slate.models.calendar.Calendar;
 import com.slate.models.calendar.CalendarEvent;
 import com.slate.models.calendar.CalendarEventRequest;
+import com.slate.models.user.SignedInUser;
 import com.slate.service.calendar.CalendarService;
 import com.slate.user.SignInHandler;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -29,7 +27,6 @@ public class SlateService {
 
   private final SignInHandler signInHandler;
   private final CalendarService calendarService;
-  private final Callable<Void> signInCompleteCallback;
 
   private GoogleSignInAccount account;
 
@@ -38,7 +35,6 @@ public class SlateService {
       @Named("SIGN_IN") Callable<Void> signInCompleteCallback) {
     this.signInHandler = signInHandler;
     this.calendarService = calendarService;
-    this.signInCompleteCallback = signInCompleteCallback;
   }
 
   /**
@@ -51,31 +47,31 @@ public class SlateService {
     return this.account;
   }
 
-  public final void handleSignIn(Intent intent, Activity activity) {
+  public final SignedInUser handleSignIn(Intent intent, Activity activity) {
     // The Task returned from this call is always completed, no need to attach a listener.
     Task<GoogleSignInAccount> signInTask = GoogleSignIn.getSignedInAccountFromIntent(intent);
 
     // If the account is present, get the next calendar events
-    Optional.ofNullable(signInHandler.handleSignInResult(signInTask, activity))
+    SignedInUser signedInAccount = signInHandler.getSignedInAccount(signInTask, activity);
+    Optional.ofNullable(signedInAccount)
         .ifPresent(
             account -> {
-              Calendar primaryCalendar = calendarService.getPrimaryCalendar(account.getEmail());
-              Log.d(TAG, "calendar: " + primaryCalendar);
-
-              List<CalendarEvent> calendarEvents =
-                  calendarService
-                      .getCalendarEvents(getCalendarEventRequest(primaryCalendar.getId()));
-              Log.d(TAG, "handleSignIn: " + calendarEvents);
-
-              TextView eventsText = activity.findViewById(R.id.event_text);
-              eventsText.setText(calendarEvents.toString());
+              getCalendarAndEvents(activity, account.getEmail());
             });
+    return signedInAccount;
+  }
 
-    try {
-      this.signInCompleteCallback.call();
-    } catch (Exception e) {
-      Log.d(TAG, "Error occurred in the sign in complete callback ", e);
-    }
+  private void getCalendarAndEvents(Activity activity, String email) {
+    Calendar primaryCalendar = calendarService.getPrimaryCalendar(email);
+    Log.d(TAG, "calendar: " + primaryCalendar);
+
+    List<CalendarEvent> calendarEvents =
+        calendarService
+            .getCalendarEvents(getCalendarEventRequest(primaryCalendar.getId()));
+    Log.d(TAG, "handleSignIn: " + calendarEvents);
+
+    TextView eventsText = activity.findViewById(R.id.event_text);
+    eventsText.setText(calendarEvents.toString());
   }
 
   private CalendarEventRequest getCalendarEventRequest(String calId) {

@@ -17,13 +17,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 import com.slate.activity.R;
+import com.slate.service.SchedulingOrchestrator;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateSetListener;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog.OnTimeSetListener;
 import dagger.android.support.DaggerDialogFragment;
 import java.util.Calendar;
-import javax.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 
 public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSetListener,
@@ -32,11 +32,13 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
   private static final String TAG = CreateTaskFragment.class.getSimpleName();
   private static final double WIDTH_PERCENT = 0.85;
 
+  private final SchedulingOrchestrator schedulingOrchestrator;
+
   private EditText deadlineDate;
   private EditText deadlineTime;
 
-  @Inject
-  public CreateTaskFragment() {
+  public CreateTaskFragment(SchedulingOrchestrator schedulingOrchestrator) {
+    this.schedulingOrchestrator = schedulingOrchestrator;
   }
 
   @Nullable
@@ -136,6 +138,8 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
       Integer duration = Integer.valueOf(getTextInputLayoutText(R.id.create_task_duration));
 
       Log.d(TAG, "getButtonOnClickListener: Task attributed received!");
+
+      this.schedulingOrchestrator.scheduleTask(null, null);
     };
   }
 

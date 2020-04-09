@@ -1,7 +1,6 @@
 package com.slate.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import androidx.annotation.Nullable;
 import com.slate.activity.R;
 import dagger.android.support.DaggerFragment;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import javax.inject.Inject;
 import javax.inject.Named;
 

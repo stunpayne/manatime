@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.util.Log;
-
 import androidx.core.app.ActivityCompat;
 
 public class UserPermission {

@@ -1,6 +1,5 @@
 package com.slate.models.task;
 
-import java.time.Instant;
 import java.util.Date;
 
 /**

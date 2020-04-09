@@ -4,15 +4,14 @@ import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.util.Log;
-
 import android.view.View;
-import androidx.fragment.app.FragmentManager;
 import com.slate.activity.MainActivity;
 import com.slate.service.calendar.CalendarService;
 import com.slate.service.calendar.google.GoogleCalendarService;
+import com.slate.service.scheduler.FirstSlotTaskScheduler;
+import com.slate.service.scheduler.TaskScheduler;
 import dagger.Module;
 import dagger.Provides;
-import java.util.concurrent.Callable;
 import javax.inject.Named;
 
 @Module
@@ -44,10 +43,9 @@ public class AppModule {
     return new GoogleCalendarService(contentResolver);
   }
 
-  @Named("SIGN_IN")
   @Provides
-  static Callable<Void> signInCompleteCallback(MainActivity activity) {
-    return activity.signInCompleteCallback();
+  static TaskScheduler provideTaskScheduler() {
+    return new FirstSlotTaskScheduler();
   }
 
   @Named("CREATE_TASK")
