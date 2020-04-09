@@ -7,9 +7,11 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,12 +23,16 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog.OnTimeSetListen
 import dagger.android.support.DaggerDialogFragment;
 import java.util.Calendar;
 import javax.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 
 public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSetListener,
     OnDateSetListener {
 
   private static final String TAG = CreateTaskFragment.class.getSimpleName();
-  private static final double WIDTH_PERCENT = 0.75;
+  private static final double WIDTH_PERCENT = 0.85;
+
+  private EditText deadlineDate;
+  private EditText deadlineTime;
 
   @Inject
   public CreateTaskFragment() {
@@ -46,29 +52,13 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
     super.onStart();
 
     Calendar now = Calendar.getInstance();
-    getDialog().findViewById(R.id.create_task_dl_date_actual).setOnClickListener(v -> {
-      DatePickerDialog datePicker = DatePickerDialog.newInstance(null,
-          now.get(Calendar.YEAR), // Initial year selection
-          now.get(Calendar.MONTH), // Initial month selection
-          now.get(Calendar.DAY_OF_MONTH) // Initial day selection
-      );
-      datePicker.setVersion(DatePickerDialog.Version.VERSION_2);
-      datePicker.setOnDateSetListener(this);
-      datePicker.show(getActivity().getSupportFragmentManager(), "Date_Picker");
-    });
+    deadlineDate = getDialog().findViewById(R.id.create_task_dl_date_actual);
+    deadlineDate.setOnClickListener(getDateOnClickListener(now));
 
-    getDialog().findViewById(R.id.create_task_dl_time_actual).setOnClickListener(v -> {
-      TimePickerDialog timePicker = TimePickerDialog.newInstance(null,
-          now.get(Calendar.HOUR),
-          now.get(Calendar.MINUTE),
-          now.get(Calendar.SECOND),
-          true
-      );
-      timePicker.setVersion(TimePickerDialog.Version.VERSION_2);
-      timePicker.setOnTimeSetListener(this);
-      timePicker.show(getActivity().getSupportFragmentManager(), "Date_Picker");
-    });
+    deadlineTime = getDialog().findViewById(R.id.create_task_dl_time_actual);
+    deadlineTime.setOnClickListener(getTimeOnClickListener(now));
   }
+
 
   @Override
   public void onResume() {
@@ -87,12 +77,49 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
 
   @Override
   public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-    Log.d(TAG,
-        "You picked the following date: " + dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+    int month = monthOfYear + 1;
+    String date = getActivity()
+        .getString(R.string.dl_date_fill, String.valueOf(month), String.valueOf(dayOfMonth),
+            String.valueOf(year));
+    Log.d(TAG, "You picked the following date: " + date);
+    deadlineDate.setText(date);
   }
 
   @Override
   public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
-    Log.d(TAG, "You picked the following time: " + hourOfDay + "h" + minute + "m" + second);
+    String time = getActivity()
+        .getString(R.string.dl_time_fill, String.valueOf(hourOfDay), String.valueOf(minute),
+            String.valueOf(second));
+    Log.d(TAG, "You picked the following time: " + time);
+    deadlineTime.setText(time);
+  }
+
+  @NotNull
+  private OnClickListener getDateOnClickListener(Calendar time) {
+    return v -> {
+      DatePickerDialog datePicker = DatePickerDialog.newInstance(null,
+          time.get(Calendar.YEAR), // Initial year selection
+          time.get(Calendar.MONTH), // Initial month selection
+          time.get(Calendar.DAY_OF_MONTH) // Initial day selection
+      );
+      datePicker.setVersion(DatePickerDialog.Version.VERSION_2);
+      datePicker.setOnDateSetListener(this);
+      datePicker.show(getActivity().getSupportFragmentManager(), "Date_Picker");
+    };
+  }
+
+  @NotNull
+  private OnClickListener getTimeOnClickListener(Calendar time) {
+    return v -> {
+      TimePickerDialog timePicker = TimePickerDialog.newInstance(null,
+          time.get(Calendar.HOUR),
+          time.get(Calendar.MINUTE),
+          time.get(Calendar.SECOND),
+          true
+      );
+      timePicker.setVersion(TimePickerDialog.Version.VERSION_2);
+      timePicker.setOnTimeSetListener(this);
+      timePicker.show(getActivity().getSupportFragmentManager(), "Date_Picker");
+    };
   }
 }
