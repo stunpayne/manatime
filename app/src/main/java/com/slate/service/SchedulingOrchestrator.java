@@ -55,12 +55,12 @@ public class SchedulingOrchestrator {
     List<Slot> classifiedSlots = classifyTasks(eventsTillDeadline);
 
     CalendarEvent eventToSchedule = scheduleAndGetEvent(email, task, primaryCalendar);
-    Log.d(TAG, "scheduleTask: " + eventToSchedule);
-    ;
+    Log.d(TAG, "Event to schedule: " + eventToSchedule);
+    CalendarEvent scheduledEvent = calendarService.addCalendarEvent(eventToSchedule);
+    Log.d(TAG, "Scheduled event: " + scheduledEvent);
   }
 
   private CalendarEvent scheduleAndGetEvent(String email, Task task, Calendar calendar) {
-    CalendarEvent eventToSchedule;
     try {
       ScheduleSlot slot = taskScheduler
           .schedule(task, DummyTimeSlotGenerator.generate(task.getDeadline().getTime()));

@@ -2,7 +2,9 @@ package com.slate.service.calendar.google;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import com.google.common.collect.Lists;
@@ -14,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An implementation of the CalendarService interface for the Google Calendar
@@ -154,6 +157,37 @@ public class GoogleCalendarService implements CalendarService {
   }
 
   /**
+   * Writes an event to the calendar using the Google Calendar API
+   *
+   * @param event the CalendarEvent to add
+   * @return the same calendar event with the ID of the added event
+   */
+  @Override
+  public CalendarEvent addCalendarEvent(CalendarEvent event) {
+    ContentValues values = getContentValues(event);
+
+    @SuppressLint("MissingPermission") Uri uri = contentResolver.insert(Events.CONTENT_URI, values);
+
+    // get the event ID that is the last element in the Uri
+    long eventID = Long.parseLong(uri.getLastPathSegment());
+    event.setId(String.valueOf(eventID));
+
+    return event;
+  }
+
+  @NotNull
+  private ContentValues getContentValues(CalendarEvent event) {
+    ContentValues values = new ContentValues();
+    values.put(Events.DTSTART, String.valueOf(event.getStartTime()));
+    values.put(Events.DTEND, String.valueOf(event.getEndTime()));
+    values.put(Events.TITLE, event.getTitle());
+    values.put(Events.DESCRIPTION, event.getDescription());
+    values.put(Events.CALENDAR_ID, event.getCalendarId());
+    values.put(Events.EVENT_TIMEZONE, event.getTimeZone());
+    return values;
+  }
+
+  /**
    * Provides fields for the where part of the query
    *
    * @return fields in the where part of the query
@@ -172,7 +206,7 @@ public class GoogleCalendarService implements CalendarService {
    * Provides a list of upcoming events on the user's calendar using the given events cursor
    *
    * @param eventsCur a cursor pointing to the results of the calendar events search
-   * @param limit the maximum number of events to report
+   * @param limit     the maximum number of events to report
    * @return a list of upcoming calendar events
    */
   private List<CalendarEvent> getUpcomingEvents(Cursor eventsCur, int limit) {

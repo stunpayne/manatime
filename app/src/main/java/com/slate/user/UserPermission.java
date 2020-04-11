@@ -1,6 +1,7 @@
 package com.slate.user;
 
 import android.Manifest;
+import android.Manifest.permission;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.util.Log;
@@ -17,7 +18,7 @@ public class UserPermission {
       Log.w(TAG, "Calendar permission missing!");
 
       ActivityCompat.requestPermissions(
-          activity, new String[] {Manifest.permission.READ_CALENDAR}, 0);
+          activity, new String[]{Manifest.permission.READ_CALENDAR, permission.WRITE_CALENDAR}, 0);
     }
   }
 }

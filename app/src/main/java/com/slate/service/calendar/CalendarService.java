@@ -29,4 +29,12 @@ public interface CalendarService {
    * @return a list of events from the user's calendar
    */
   List<CalendarEvent> getCalendarEvents(CalendarEventRequest request);
+
+  /**
+   * Adds a new event to the user's calendar
+   *
+   * @param event the CalendarEvent to add
+   * @return the same calendar event with the updated event ID
+   */
+  CalendarEvent addCalendarEvent(CalendarEvent event);
 }
