@@ -27,6 +27,7 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog.OnTimeSetListen
 import dagger.android.support.DaggerDialogFragment;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import org.jetbrains.annotations.NotNull;
 
@@ -169,11 +170,7 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
    */
   private Task createTask(String taskName, String deadlineDate, String deadlineTime,
       Integer duration) {
-    Calendar deadlineTimeCal = getTimeAsCalendar(deadlineTime);
-    Calendar deadline = toCalendar(deadlineDate);
-    deadline.set(Calendar.HOUR_OF_DAY, deadlineTimeCal.get(Calendar.HOUR_OF_DAY));
-    deadline.set(Calendar.MINUTE, deadlineTimeCal.get(Calendar.MINUTE));
-    deadline.set(Calendar.SECOND, deadlineTimeCal.get(Calendar.SECOND));
+    Calendar deadline = getDeadlineDateTime(deadlineDate, deadlineTime);
 
     return Task.builder()
         .name(taskName)
@@ -182,7 +179,25 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
         .build();
   }
 
+  /**
+   * Combines the separate deadline date and deadline time into one object
+   *
+   * @param deadlineDate the deadline Date
+   * @param deadlineTime the deadline Time
+   * @return a Calendar with the date and time set as that of the deadline
+   */
+  @NotNull
+  private Calendar getDeadlineDateTime(String deadlineDate, String deadlineTime) {
+    Calendar deadlineTimeCal = getTimeAsCalendar(deadlineTime);
+    Calendar deadline = toCalendar(deadlineDate);
+    deadline.set(Calendar.HOUR_OF_DAY, deadlineTimeCal.get(Calendar.HOUR_OF_DAY));
+    deadline.set(Calendar.MINUTE, deadlineTimeCal.get(Calendar.MINUTE));
+    deadline.set(Calendar.SECOND, deadlineTimeCal.get(Calendar.SECOND));
+    return deadline;
+  }
+
   private Calendar toCalendar(String date) {
+    Instant.now();
     Calendar calendar = Calendar.getInstance();
     try {
       calendar.setTime(dateFormat.parse(date));

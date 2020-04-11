@@ -13,8 +13,6 @@ import java.util.List;
  */
 public interface CalendarService {
 
-  //  TODO: Create separate models for calendar and event. Right now, we're not using any calendar
-  // other than Google so it's not an urgent requirement.
   /**
    * Gets the primary calendar of the user. Account name can be anything (user ID, email ID etc.)
    * depending on the account. For our use case, it's the user's email.
@@ -25,7 +23,7 @@ public interface CalendarService {
   Calendar getPrimaryCalendar(String accountName);
 
   /**
-   * Gets events from a user's calendar given a request object.
+   * Gets a user's calendar events that lie in a given interval
    *
    * @param request the CalendarEventRequest
    * @return a list of events from the user's calendar

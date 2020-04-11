@@ -60,6 +60,10 @@ public class CalendarEvent {
     return endTime;
   }
 
+  public Long getDuration() {
+    return endTime - startTime;
+  }
+
 
   public static final class Builder {
 

@@ -42,6 +42,10 @@ public class Task {
     return durationMinutes;
   }
 
+  public Long getDurationMillis() {
+    return durationMinutes * 60 * 1000L;
+  }
+
   public Importance getImportance() {
     return importance;
   }

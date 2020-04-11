@@ -29,24 +29,16 @@ public class CalendarEventRequest {
     return calendarId;
   }
 
-  public void setCalendarId(String calendarId) {
-    this.calendarId = calendarId;
-  }
-
   public Long getEndTimeAfter() {
     return endTimeAfter;
   }
 
-  public void setEndTimeAfter(Long endTimeAfter) {
-    this.endTimeAfter = endTimeAfter;
+  public Long getStartTimeBefore() {
+    return startTimeBefore;
   }
 
   public int getNumberOfEvents() {
     return numberOfEvents;
-  }
-
-  public void setNumberOfEvents(int numberOfEvents) {
-    this.numberOfEvents = numberOfEvents;
   }
 
   public static final class Builder {
@@ -54,7 +46,7 @@ public class CalendarEventRequest {
     private String calendarId;
     private Long endTimeAfter;
     private Long startTimeBefore;
-    private int numberOfEvents;
+    private int numberOfEvents = Integer.MAX_VALUE;
 
     private Builder() {
     }
@@ -79,15 +71,9 @@ public class CalendarEventRequest {
       return this;
     }
 
-    public Builder noLimit()  {
-      this.numberOfEvents = Integer.MAX_VALUE;
-      return this;
-    }
-
     public CalendarEventRequest build() {
       CalendarEventRequest calendarEventRequest =
-          new CalendarEventRequest(calendarId, endTimeAfter, startTimeBefore);
-      calendarEventRequest.setNumberOfEvents(numberOfEvents);
+          new CalendarEventRequest(calendarId, endTimeAfter, startTimeBefore, numberOfEvents);
       return calendarEventRequest;
     }
   }

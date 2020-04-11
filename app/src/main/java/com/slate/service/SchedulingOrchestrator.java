@@ -1,14 +1,21 @@
 package com.slate.service;
 
 
+import android.util.Log;
 import com.google.common.collect.Lists;
 import com.slate.common.MutableCalendar;
+import com.slate.exception.SchedulingException;
 import com.slate.models.calendar.Calendar;
 import com.slate.models.calendar.CalendarEvent;
 import com.slate.models.calendar.CalendarEventRequest;
+import com.slate.models.slot.ScheduleSlot;
+import com.slate.models.slot.SimpleSlot;
+import com.slate.models.slot.Slot;
+import com.slate.models.slot.SlotType;
 import com.slate.models.task.Task;
 import com.slate.service.calendar.CalendarService;
 import com.slate.service.scheduler.TaskScheduler;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -45,8 +52,23 @@ public class SchedulingOrchestrator {
     Calendar primaryCalendar = calendarService.getPrimaryCalendar(email);
     List<CalendarEvent> eventsTillDeadline = getEventsTillDeadline(primaryCalendar,
         task.getDeadline().getTime());
-    List<Task> classifiedSlots = classifyTasks(eventsTillDeadline);
-    Task scheduledTask = taskScheduler.schedule(task, eventsTillDeadline);
+    List<Slot> classifiedSlots = classifyTasks(eventsTillDeadline);
+
+    CalendarEvent eventToSchedule = scheduleAndGetEvent(email, task, primaryCalendar);
+    Log.d(TAG, "scheduleTask: " + eventToSchedule);
+    ;
+  }
+
+  private CalendarEvent scheduleAndGetEvent(String email, Task task, Calendar calendar) {
+    CalendarEvent eventToSchedule;
+    try {
+      ScheduleSlot slot = taskScheduler
+          .schedule(task, DummyTimeSlotGenerator.generate(task.getDeadline().getTime()));
+      return createCalendarEvent(task, email, slot, calendar);
+    } catch (SchedulingException e) {
+      Log.e(TAG, "Error occurred while scheduling task", e);
+      return null;
+    }
   }
 
   //-------------------------------------- Fetching events --------------------------------------//
@@ -59,16 +81,18 @@ public class SchedulingOrchestrator {
    * @return a list of the events on the user's calendar
    */
   private List<CalendarEvent> getEventsTillDeadline(Calendar calendar, Long deadlineMillis) {
-    calendarService.getCalendarEvents(createCalendarEventRequest(calendar.getId(), deadlineMillis));
-    return Lists.newArrayList();
+    return calendarService
+        .getCalendarEvents(createCalendarEventRequest(calendar.getId(), deadlineMillis));
   }
 
   /**
    * Provides a calendar request for the given calendar ID and deadline
    */
   private CalendarEventRequest createCalendarEventRequest(String calendarId, Long deadlineMillis) {
-    return CalendarEventRequest.builder().calendarId(calendarId).endTimeAfter(getMoratoriumEnd())
-        .startTimeBefore(deadlineMillis).noLimit()
+    return CalendarEventRequest.builder()
+        .calendarId(calendarId)
+        .endTimeAfter(getMoratoriumEnd())
+        .startTimeBefore(deadlineMillis)
         .build();
   }
 
@@ -78,21 +102,54 @@ public class SchedulingOrchestrator {
    *
    * @return moratorium end time in epoch milliseconds
    */
-  private Long getMoratoriumEnd() {
+  private static Long getMoratoriumEnd() {
     return getNextDayNoon();
   }
 
   /**
    * Provides the epoch milliseconds till the next day noon
    */
-  private Long getNextDayNoon() {
-    return new MutableCalendar().addDays(1).setHour(12).getTimeInMillis();
+  private static Long getNextDayNoon() {
+    return new MutableCalendar().addDays(1).setExactHour(12).getTimeInMillis();
   }
 
   //------------------------------------- Classifying events ------------------------------------//
 
-  //  TODO: Change Task to Slot
-  private List<Task> classifyTasks(List<CalendarEvent> presentEvents) {
+  private List<Slot> classifyTasks(List<CalendarEvent> presentEvents) {
     return Lists.newArrayList();
+  }
+
+  private static class DummyTimeSlotGenerator {
+
+    static List<Slot> generate(long deadline) {
+      long firstAvailable = getMoratoriumEnd();
+      long lastAvailable = (firstAvailable + deadline) / 2;
+
+      Slot freeSlot = new SimpleSlot(firstAvailable, lastAvailable, SlotType.FREE);
+      Slot blockedSlot = new SimpleSlot(lastAvailable, deadline, SlotType.BLOCKED_BY_USER);
+
+      return Lists.newArrayList(freeSlot, blockedSlot);
+    }
+  }
+
+  /**
+   * Creates a calendar event from the task in the slot given by the TaskScheduler
+   *
+   * @return a CalendarEvent for the task to be created
+   */
+  private CalendarEvent createCalendarEvent(Task task, String email, ScheduleSlot slot,
+      Calendar calendar) {
+
+    //  TODO: Set Location of task
+    return CalendarEvent.builder()
+        .calendarId(calendar.getId())
+        .organizer(email)
+        .title(task.getName())
+        .description(task.getDescription())
+        .startTime(slot.getStartTime())
+        .endTime(slot.getEndTime())
+        .timeZone(calendar.getTimeZone())
+        .location(null)
+        .build();
   }
 }

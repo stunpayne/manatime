@@ -31,8 +31,7 @@ public class SlateService {
   private GoogleSignInAccount account;
 
   @Inject
-  public SlateService(SignInHandler signInHandler, CalendarService calendarService,
-      @Named("SIGN_IN") Callable<Void> signInCompleteCallback) {
+  public SlateService(SignInHandler signInHandler, CalendarService calendarService) {
     this.signInHandler = signInHandler;
     this.calendarService = calendarService;
   }

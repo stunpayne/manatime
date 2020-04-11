@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 
-/** An implementation of the CalendarService interface for the Google Calendar */
+/**
+ * An implementation of the CalendarService interface for the Google Calendar
+ */
 public class GoogleCalendarService implements CalendarService {
 
   private static final String GOOGLE_PKG_NAME = "com.google";
@@ -23,30 +25,30 @@ public class GoogleCalendarService implements CalendarService {
   // Projection array. Creating indices for this array instead of doing
   // dynamic lookups improves performance.
   private static final String[] CAL_PROJECTION =
-      new String[] {
-        Calendars._ID, // 0
-        Calendars.CALENDAR_DISPLAY_NAME, // 1
-        Calendars.ACCOUNT_NAME, // 2
-        Calendars.OWNER_ACCOUNT, // 3
-        Calendars.IS_PRIMARY, // 4
-        Calendars.VISIBLE, // 5
-        Calendars.CALENDAR_TIME_ZONE // 6
+      new String[]{
+          Calendars._ID, // 0
+          Calendars.CALENDAR_DISPLAY_NAME, // 1
+          Calendars.ACCOUNT_NAME, // 2
+          Calendars.OWNER_ACCOUNT, // 3
+          Calendars.IS_PRIMARY, // 4
+          Calendars.VISIBLE, // 5
+          Calendars.CALENDAR_TIME_ZONE // 6
       };
 
   // Projection array. Creating indices for this array instead of doing
   // dynamic lookups improves performance.
   private static final String[] EVENT_PROJECTION =
-      new String[] {
-        Events.CALENDAR_ID, // 0
-        Events.ORGANIZER, // 1
-        Events.TITLE, // 2
-        Events.DTSTART, // 3
-        Events.DTEND, // 4
-        Events._ID, // 5
-        Events.STATUS, // 6
-        Events.EVENT_LOCATION, // 7
-        Events.DESCRIPTION, // 8
-        Events.EVENT_TIMEZONE // 9
+      new String[]{
+          Events.CALENDAR_ID, // 0
+          Events.ORGANIZER, // 1
+          Events.TITLE, // 2
+          Events.DTSTART, // 3
+          Events.DTEND, // 4
+          Events._ID, // 5
+          Events.STATUS, // 6
+          Events.EVENT_LOCATION, // 7
+          Events.DESCRIPTION, // 8
+          Events.EVENT_TIMEZONE // 9
       };
 
   // The indices for calendar projection array above.
@@ -87,12 +89,12 @@ public class GoogleCalendarService implements CalendarService {
   public Calendar getPrimaryCalendar(String accountName) {
 
     //  Values for the "where part of query
-    String[] selectionArgs = new String[] {accountName, GOOGLE_PKG_NAME, accountName};
+    String[] selectionArgs = new String[]{accountName, GOOGLE_PKG_NAME, accountName};
 
     try (@SuppressLint("MissingPermission")
-        Cursor cursor =
-            contentResolver.query(
-                Calendars.CONTENT_URI, CAL_PROJECTION, getCalSelection(), selectionArgs, null)) {
+    Cursor cursor =
+        contentResolver.query(
+            Calendars.CONTENT_URI, CAL_PROJECTION, getCalSelection(), selectionArgs, null)) {
 
       return Optional.ofNullable(cursor)
           .map(
@@ -133,16 +135,20 @@ public class GoogleCalendarService implements CalendarService {
   @Override
   public List<CalendarEvent> getCalendarEvents(CalendarEventRequest request) {
     String selection =
-        "((" + Events.CALENDAR_ID + " = ?)" + " AND (" + Events.DTSTART + " > ?)" + ")";
+        "((" + Events.CALENDAR_ID + " = ?)"
+            + " AND (" + Events.DTEND + " > ?)"
+            + " AND (" + Events.DTSTART + " < ?)"
+            + ")";
     String[] selectionArgs =
-        new String[] {request.getCalendarId(), String.valueOf(request.getEndTimeAfter())};
+        new String[]{request.getCalendarId(), String.valueOf(request.getEndTimeAfter()),
+            String.valueOf(request.getStartTimeBefore())};
 
     try (@SuppressLint("MissingPermission")
-        Cursor eventsCur =
-            contentResolver.query(
-                Events.CONTENT_URI, EVENT_PROJECTION, selection, selectionArgs, null)) {
+    Cursor eventsCur =
+        contentResolver.query(
+            Events.CONTENT_URI, EVENT_PROJECTION, selection, selectionArgs, null)) {
       return Optional.ofNullable(eventsCur)
-          .map(this::getUpcomingEvents)
+          .map(cur -> getUpcomingEvents(cur, request.getNumberOfEvents()))
           .orElse(Lists.newArrayList());
     }
   }
@@ -166,15 +172,16 @@ public class GoogleCalendarService implements CalendarService {
    * Provides a list of upcoming events on the user's calendar using the given events cursor
    *
    * @param eventsCur a cursor pointing to the results of the calendar events search
+   * @param limit the maximum number of events to report
    * @return a list of upcoming calendar events
    */
-  private List<CalendarEvent> getUpcomingEvents(Cursor eventsCur) {
+  private List<CalendarEvent> getUpcomingEvents(Cursor eventsCur, int limit) {
     StringBuilder eventText = new StringBuilder("First 5 Events: \n");
     int count = 0;
 
     List<CalendarEvent> calendarEvents = Lists.newArrayList();
 
-    while (eventsCur.moveToNext() && count < 5) {
+    while (eventsCur.moveToNext() && count < limit) {
       long calId = eventsCur.getLong(EVENT_PROJECTION_CAL_ID_INDEX);
       String organizer = eventsCur.getString(EVENT_PROJECTION_ORGANIZER_INDEX);
       String title = eventsCur.getString(EVENT_PROJECTION_TITLE_INDEX);
