@@ -54,7 +54,6 @@ public class MainActivity extends DaggerAppCompatActivity {
   public View.OnClickListener createTaskButtonListener() {
     return v -> {
       Log.d(TAG, "showCreateTaskDialogCallback!");
-      getSupportFragmentManager().popBackStack();
       new CreateTaskFragment(schedulingOrchestrator, signedInUser)
           .show(getSupportFragmentManager(), "create_task_dialog");
     };

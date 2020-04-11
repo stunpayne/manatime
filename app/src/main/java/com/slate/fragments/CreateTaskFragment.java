@@ -38,6 +38,7 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
   private static final double WIDTH_PERCENT = 0.85;
   private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
   private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+  public static final String EVENT_SCHEDULED = "Event scheduled! Check your Calendar!";
 
   private final SchedulingOrchestrator schedulingOrchestrator;
   private final SignedInUser signedInUser;
@@ -151,6 +152,8 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
       Log.d(TAG, "getButtonOnClickListener: Task attributed received!");
 
       this.schedulingOrchestrator.scheduleTask(signedInUser.getEmail(), newTask);
+      Toast.makeText(getActivity(), EVENT_SCHEDULED, Toast.LENGTH_SHORT).show();
+      dismiss();
     };
   }
 

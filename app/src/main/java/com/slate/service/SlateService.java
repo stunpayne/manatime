@@ -69,8 +69,10 @@ public class SlateService {
             .getCalendarEvents(getCalendarEventRequest(primaryCalendar.getId()));
     Log.d(TAG, "handleSignIn: " + calendarEvents);
 
+    StringBuilder builder = new StringBuilder("Events on Calendar\n");
+    calendarEvents.forEach(event -> builder.append(event.getTitle()).append("\n"));
     TextView eventsText = activity.findViewById(R.id.event_text);
-    eventsText.setText(calendarEvents.toString());
+    eventsText.setText(builder.toString());
   }
 
   private CalendarEventRequest getCalendarEventRequest(String calId) {
