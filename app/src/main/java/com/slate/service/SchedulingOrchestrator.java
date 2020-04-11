@@ -49,13 +49,21 @@ public class SchedulingOrchestrator {
    * @param task  the new task to schedule on the calendar
    */
   public void scheduleTask(String email, Task task) {
+    //  Get the user's calendar
     Calendar primaryCalendar = calendarService.getPrimaryCalendar(email);
+
+    //  Get all the events on the calendar till deadline
     List<CalendarEvent> eventsTillDeadline = getEventsTillDeadline(primaryCalendar,
         task.getDeadline().getTime());
+
+    //  Classify all the events and free blocks into slots
     List<Slot> classifiedSlots = classifyTasks(eventsTillDeadline);
 
+    //  Get time slot during which event is to be scheduled
     CalendarEvent eventToSchedule = scheduleAndGetEvent(email, task, primaryCalendar);
     Log.d(TAG, "Event to schedule: " + eventToSchedule);
+
+    //  Make an entry into the calendar
     CalendarEvent scheduledEvent = calendarService.addCalendarEvent(eventToSchedule);
     Log.d(TAG, "Scheduled event: " + scheduledEvent);
   }
