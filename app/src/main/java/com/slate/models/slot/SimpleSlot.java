@@ -3,7 +3,7 @@ package com.slate.models.slot;
 public class SimpleSlot implements Slot {
 
   private final Long startTime;
-  private final Long endTime;
+  private Long endTime;
   private final SlotType slotType;
 
   public SimpleSlot(Long startTime, Long endTime, SlotType slotType) {
@@ -20,6 +20,11 @@ public class SimpleSlot implements Slot {
   @Override
   public Long getEndTime() {
     return endTime;
+  }
+
+  @Override
+  public void setEndTime(Long time) {
+    this.endTime = time;
   }
 
   @Override

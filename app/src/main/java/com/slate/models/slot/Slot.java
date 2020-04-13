@@ -9,6 +9,8 @@ public interface Slot {
 
   Long getEndTime();
 
+  void setEndTime(Long time);
+
   Long getDuration();
 
   SlotType getType();

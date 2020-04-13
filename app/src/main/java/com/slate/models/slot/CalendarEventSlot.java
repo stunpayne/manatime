@@ -23,6 +23,11 @@ public class CalendarEventSlot implements Slot {
   }
 
   @Override
+  public void setEndTime(Long time) {
+
+  }
+
+  @Override
   public Long getDuration() {
     return calendarEvent.getDuration();
   }
