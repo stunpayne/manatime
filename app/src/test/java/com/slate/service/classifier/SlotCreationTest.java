@@ -150,6 +150,25 @@ public class SlotCreationTest {
   }
 
   @Test
+  public void threeAdjacentEvents() {
+    List<CalendarEvent> events = Lists.newArrayList();
+    events.add(CalendarEvent.builder().startTime(2000L).endTime(4000L).build());
+    events.add(CalendarEvent.builder().startTime(4000L).endTime(5000L).build());
+    events.add(CalendarEvent.builder().startTime(5000L).endTime(7000L).build());
+
+    List<Slot> allSlots = simpleSlotter.createSlots(startTime, deadline, events);
+
+    //  Verify all 4 slots
+    Assert.assertEquals("Expected 4 slots", 5, allSlots.size());
+
+    checkSlotValues(SlotType.FREE, startTime, 2000L, allSlots.get(0), "1");
+    checkSlotValues(SlotType.BLOCKED_BY_USER, 2000L, 4000L, allSlots.get(1), "2");
+    checkSlotValues(SlotType.BLOCKED_BY_USER, 4000L, 5000L, allSlots.get(2), "3");
+    checkSlotValues(SlotType.BLOCKED_BY_USER, 5000L, 7000L, allSlots.get(3), "4");
+    checkSlotValues(SlotType.FREE, 7000L, deadline, allSlots.get(4), "5");
+  }
+
+  @Test
   public void twoSeparateEvents() {
     List<CalendarEvent> events = Lists.newArrayList();
     events.add(CalendarEvent.builder().startTime(2000L).endTime(4000L).build());
