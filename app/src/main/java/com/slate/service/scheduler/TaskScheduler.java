@@ -1,7 +1,6 @@
 package com.slate.service.scheduler;
 
 import com.slate.exception.SchedulingException;
-import com.slate.models.calendar.CalendarEvent;
 import com.slate.models.slot.ScheduleSlot;
 import com.slate.models.slot.Slot;
 import com.slate.models.task.Task;

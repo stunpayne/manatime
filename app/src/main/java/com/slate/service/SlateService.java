@@ -16,9 +16,7 @@ import com.slate.service.calendar.CalendarService;
 import com.slate.user.SignInHandler;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public class SlateService {
 

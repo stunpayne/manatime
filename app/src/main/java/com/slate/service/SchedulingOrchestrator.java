@@ -15,7 +15,6 @@ import com.slate.models.slot.SlotType;
 import com.slate.models.task.Task;
 import com.slate.service.calendar.CalendarService;
 import com.slate.service.scheduler.TaskScheduler;
-import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 

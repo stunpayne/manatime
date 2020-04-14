@@ -6,11 +6,8 @@ import com.slate.models.slot.CalendarEventSlot;
 import com.slate.models.slot.SimpleSlot;
 import com.slate.models.slot.Slot;
 import com.slate.models.slot.SlotType;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 public class SimpleSlotter implements Slotter {
 
