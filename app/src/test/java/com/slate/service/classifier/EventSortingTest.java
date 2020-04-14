@@ -3,13 +3,11 @@ package com.slate.service.classifier;
 import com.google.common.collect.Lists;
 import com.slate.models.calendar.CalendarEvent;
 import java.util.List;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class SimpleSlotterTest {
+public class EventSortingTest {
 
   private static SimpleSlotter simpleSlotter;
 
