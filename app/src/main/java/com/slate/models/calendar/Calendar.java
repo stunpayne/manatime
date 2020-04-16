@@ -1,6 +1,7 @@
 package com.slate.models.calendar;
 
 public class Calendar {
+
   private String id;
   private String displayName;
   private String accountName;
@@ -51,7 +52,8 @@ public class Calendar {
     private Boolean visible;
     private String timeZone;
 
-    private CalendarBuilder() {}
+    private CalendarBuilder() {
+    }
 
     public CalendarBuilder id(String id) {
       this.id = id;
@@ -103,26 +105,12 @@ public class Calendar {
 
   @Override
   public String toString() {
-    return "Calendar{"
-        + "id='"
-        + id
-        + '\''
-        + ", displayName='"
-        + displayName
-        + '\''
-        + ", accountName='"
-        + accountName
-        + '\''
-        + ", ownerAccount='"
-        + ownerAccount
-        + '\''
-        + ", primary="
-        + primary
-        + ", visible="
-        + visible
-        + ", timeZone='"
-        + timeZone
-        + '\''
-        + '}';
+    return "{\"id\" : " + (id == null ? null : "\"" + id + "\"") + ",\"displayName\" : " + (
+        displayName == null ? null : "\"" + displayName + "\"") + ",\"accountName\" : " + (
+        accountName == null ? null : "\"" + accountName + "\"") + ",\"ownerAccount\" : " + (
+        ownerAccount == null ? null : "\"" + ownerAccount + "\"") + ",\"primary\" : " + primary
+        + ",\"visible\" : " + visible + ",\"timeZone\" : " + (timeZone == null ? null
+        : "\"" + timeZone + "\"") + "}";
   }
+
 }

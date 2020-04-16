@@ -8,6 +8,8 @@ import android.view.View;
 import com.slate.activity.MainActivity;
 import com.slate.service.calendar.CalendarService;
 import com.slate.service.calendar.google.GoogleCalendarService;
+import com.slate.service.classifier.SimpleSlotter;
+import com.slate.service.classifier.Slotter;
 import com.slate.service.scheduler.FirstSlotTaskScheduler;
 import com.slate.service.scheduler.TaskScheduler;
 import dagger.Module;
@@ -46,6 +48,11 @@ public class AppModule {
   @Provides
   static TaskScheduler provideTaskScheduler() {
     return new FirstSlotTaskScheduler();
+  }
+
+  @Provides
+  static Slotter provideSlotter() {
+    return new SimpleSlotter();
   }
 
   @Named("CREATE_TASK")

@@ -14,6 +14,7 @@ import com.slate.models.slot.Slot;
 import com.slate.models.slot.SlotType;
 import com.slate.models.task.Task;
 import com.slate.service.calendar.CalendarService;
+import com.slate.service.classifier.Slotter;
 import com.slate.service.scheduler.TaskScheduler;
 import java.util.List;
 import javax.inject.Inject;
@@ -32,12 +33,14 @@ public class SchedulingOrchestrator {
 
   private final CalendarService calendarService;
   private final TaskScheduler taskScheduler;
+  private final Slotter slotter;
 
   @Inject
   public SchedulingOrchestrator(CalendarService calendarService,
-      TaskScheduler taskScheduler) {
+      TaskScheduler taskScheduler, Slotter slotter) {
     this.calendarService = calendarService;
     this.taskScheduler = taskScheduler;
+    this.slotter = slotter;
   }
 
   /**
@@ -56,10 +59,12 @@ public class SchedulingOrchestrator {
         task.getDeadline().getTime());
 
     //  Classify all the events and free blocks into slots
-    List<Slot> classifiedSlots = classifyTasks(eventsTillDeadline);
+    List<Slot> classifiedSlots = slotter
+        .createSlots(getMoratoriumEnd(), task.getDeadline().getTime(), eventsTillDeadline);
 
     //  Get time slot during which event is to be scheduled
-    CalendarEvent eventToSchedule = scheduleAndGetEvent(email, task, primaryCalendar);
+    CalendarEvent eventToSchedule = scheduleAndGetEvent(email, task, classifiedSlots,
+        primaryCalendar);
     Log.d(TAG, "Event to schedule: " + eventToSchedule);
 
     //  Make an entry into the calendar
@@ -67,10 +72,10 @@ public class SchedulingOrchestrator {
     Log.d(TAG, "Scheduled event: " + scheduledEvent);
   }
 
-  private CalendarEvent scheduleAndGetEvent(String email, Task task, Calendar calendar) {
+  private CalendarEvent scheduleAndGetEvent(String email, Task task, List<Slot> timeSlots,
+      Calendar calendar) {
     try {
-      ScheduleSlot slot = taskScheduler
-          .schedule(task, DummyTimeSlotGenerator.generate(task.getDeadline().getTime()));
+      ScheduleSlot slot = taskScheduler.schedule(task, timeSlots);
       return createCalendarEvent(task, email, slot, calendar);
     } catch (SchedulingException e) {
       Log.e(TAG, "Error occurred while scheduling task", e);
