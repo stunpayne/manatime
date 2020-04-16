@@ -82,7 +82,7 @@ public class MainActivity extends DaggerAppCompatActivity {
       //  Disable sign in button
       //  Prepare current user's calendar
       //  TODO: Remove fragment from here
-      showSignInFragment();
+      showHomeScreenFragment();
     } else {
       showSignInFragment();
     }

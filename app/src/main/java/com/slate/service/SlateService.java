@@ -25,13 +25,16 @@ public class SlateService {
 
   private final SignInHandler signInHandler;
   private final CalendarService calendarService;
+  private final SharedPrefManager sharedPrefManager;
 
   private GoogleSignInAccount account;
 
   @Inject
-  public SlateService(SignInHandler signInHandler, CalendarService calendarService) {
+  public SlateService(SignInHandler signInHandler, CalendarService calendarService,
+      SharedPrefManager sharedPrefManager) {
     this.signInHandler = signInHandler;
     this.calendarService = calendarService;
+    this.sharedPrefManager = sharedPrefManager;
   }
 
   /**
@@ -53,6 +56,8 @@ public class SlateService {
     Optional.ofNullable(signedInAccount)
         .ifPresent(
             account -> {
+              //  Persist the info in SharedPreferences
+              sharedPrefManager.setSignedInUserEmail(account.getEmail());
               getCalendarAndEvents(activity, account.getEmail());
             });
     return signedInAccount;

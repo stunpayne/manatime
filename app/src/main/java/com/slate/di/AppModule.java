@@ -6,6 +6,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import com.slate.activity.MainActivity;
+import com.slate.service.SharedPrefManager;
+import com.slate.service.SimpleSharedPrefManager;
 import com.slate.service.calendar.CalendarService;
 import com.slate.service.calendar.google.GoogleCalendarService;
 import com.slate.service.classifier.SimpleSlotter;
@@ -15,6 +17,7 @@ import com.slate.service.scheduler.TaskScheduler;
 import dagger.Module;
 import dagger.Provides;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 @Module
 public class AppModule {
@@ -53,6 +56,12 @@ public class AppModule {
   @Provides
   static Slotter provideSlotter() {
     return new SimpleSlotter();
+  }
+
+  @Provides
+  @Singleton
+  static SharedPrefManager provideSharedPrefManager(Context context) {
+    return new SimpleSharedPrefManager(context);
   }
 
   @Named("CREATE_TASK")
