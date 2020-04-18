@@ -15,5 +15,6 @@
   <string name="dl_date_fill">%s/%s/%s</string>
   <string name="dl_time_fill">%s:%s:%s</string>
   <string name="create_task_button">SKED TASK</string>
+  <string name="sign_out">Sign Out</string>
 
 </resources>

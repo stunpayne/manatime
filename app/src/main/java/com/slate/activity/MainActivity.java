@@ -3,11 +3,19 @@ package com.slate.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder;
 import com.slate.common.Constants;
 import com.slate.fragments.CreateTaskFragment;
 import com.slate.fragments.HomeScreenFragment;
@@ -41,6 +49,7 @@ public class MainActivity extends DaggerAppCompatActivity {
   SchedulingOrchestrator schedulingOrchestrator;
 
   private SignedInUser signedInUser;
+  private boolean running = false;
 
   @Inject
   public MainActivity() {
@@ -66,6 +75,12 @@ public class MainActivity extends DaggerAppCompatActivity {
     setContentView(R.layout.activity_main);
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main_menu, menu);
+    return super.onCreateOptionsMenu(menu);
+  }
+
   /**
    * Check if a signed in account is already present
    */
@@ -78,10 +93,8 @@ public class MainActivity extends DaggerAppCompatActivity {
 
     Optional<GoogleSignInAccount> googleSignInAccount = Optional
         .ofNullable(slateService.checkForLogin(this));
+
     if (googleSignInAccount.isPresent()) {
-      //  Disable sign in button
-      //  Prepare current user's calendar
-      //  TODO: Remove fragment from here
       showHomeScreenFragment();
     } else {
       showSignInFragment();
@@ -99,12 +112,25 @@ public class MainActivity extends DaggerAppCompatActivity {
     }
   }
 
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.sign_out_button:
+        Toast.makeText(this, "Sign Out selected", Toast.LENGTH_SHORT).show();
+        signInHandler.handleSignOut(this);
+        showSignInFragment();
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+
   private void showHomeScreenFragment() {
     getSupportFragmentManager().popBackStack();
-    replaceFragment(R.id.main_container, homeScreenFragment, true);
+    replaceFragment(R.id.main_container, homeScreenFragment, false);
   }
 
   private void showSignInFragment() {
+    getSupportFragmentManager().popBackStack();
     replaceFragment(R.id.main_container, signInFragment, true);
   }
 

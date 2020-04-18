@@ -9,8 +9,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.slate.activity.MainActivity;
 import com.slate.common.Constants;
 import com.slate.models.user.GoogleUser;
 import com.slate.models.user.SignedInUser;
@@ -21,27 +23,25 @@ public class SignInHandler {
 
   private static final String TAG = SignInHandler.class.getSimpleName();
 
+  private final GoogleSignInOptions googleSignInOptions;
+
   @Inject
   public SignInHandler() {
+    this.googleSignInOptions = new Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail()
+        .build();
   }
 
   /**
    * Returns an on click listener for the Sign-In button on the main page
    *
-   * @param activity the Activity containing the Sign-in button
-   * @return
+   * @return on click listener for the sign in button
    */
   public View.OnClickListener createSignInButtonListener(Activity activity) {
     // Configure sign-in to request the user's ID, email address, and basic
     // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-    GoogleSignInOptions gso =
-        new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-
-    // Build a GoogleSignInClient with the options specified by gso.
-    GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(activity, gso);
-
+    GoogleSignInClient client = GoogleSignIn.getClient(activity, googleSignInOptions);
     return v -> {
-      Intent signInIntent = googleSignInClient.getSignInIntent();
+      Intent signInIntent = client.getSignInIntent();
       activity.startActivityForResult(signInIntent, Constants.IntentRC.SIGN_IN);
     };
   }
@@ -69,5 +69,14 @@ public class SignInHandler {
       Toast.makeText(activity, "Failed to fetch events!", Toast.LENGTH_SHORT).show();
       return null;
     }
+  }
+
+  /**
+   * Signs the user out of Google
+   *
+   * @param activity the Activity used to create the google sign in client
+   */
+  public void handleSignOut(Activity activity) {
+    GoogleSignIn.getClient(activity, googleSignInOptions).signOut();
   }
 }
