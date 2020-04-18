@@ -7,10 +7,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -26,6 +28,7 @@ import com.slate.service.SlateService;
 import com.slate.user.SignInHandler;
 import com.slate.user.UserPermission;
 import dagger.android.support.DaggerAppCompatActivity;
+import java.util.ArrayList;
 import java.util.Optional;
 import javax.inject.Inject;
 
@@ -125,12 +128,13 @@ public class MainActivity extends DaggerAppCompatActivity {
   }
 
   private void showHomeScreenFragment() {
-    getSupportFragmentManager().popBackStack();
-    replaceFragment(R.id.main_container, homeScreenFragment, false);
+    getSupportFragmentManager().popBackStack(SignInFragment.class.getSimpleName(),
+        FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    replaceFragment(R.id.main_container, homeScreenFragment, true);
   }
 
   private void showSignInFragment() {
-    getSupportFragmentManager().popBackStack();
+    getSupportFragmentManager().popBackStackImmediate();
     replaceFragment(R.id.main_container, signInFragment, true);
   }
 
@@ -138,7 +142,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     transaction.replace(oldFragmentId, newFragment);
     if (addToBackStack) {
-      transaction.addToBackStack(null);
+      transaction.addToBackStack(newFragment.getClass().getSimpleName());
     }
     transaction.commit();
   }
