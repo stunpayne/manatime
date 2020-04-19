@@ -1,5 +1,6 @@
 package com.slate.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +14,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.slate.common.Constants;
+import com.slate.fragments.CalendarFragment;
 import com.slate.fragments.CreateTaskFragment;
 import com.slate.fragments.HomeScreenFragment;
+import com.slate.fragments.RewardsFragment;
 import com.slate.fragments.SignInFragment;
 import com.slate.models.user.SignedInUser;
 import com.slate.service.SchedulingOrchestrator;
@@ -23,6 +28,10 @@ import com.slate.service.SlateService;
 import com.slate.user.SignInHandler;
 import com.slate.user.UserPermission;
 import dagger.android.support.DaggerAppCompatActivity;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Optional;
 import javax.inject.Inject;
 
@@ -46,7 +55,6 @@ public class MainActivity extends DaggerAppCompatActivity {
   SchedulingOrchestrator schedulingOrchestrator;
 
   private SignedInUser signedInUser;
-  private boolean running = false;
 
   @Inject
   public MainActivity() {
@@ -96,6 +104,9 @@ public class MainActivity extends DaggerAppCompatActivity {
     } else {
       showSignInFragment();
     }
+
+    ((BottomNavigationView) findViewById(R.id.bottom_nav_bar))
+        .setOnNavigationItemSelectedListener(getBottomTabSelectionListener());
   }
 
   @Override
@@ -119,6 +130,33 @@ public class MainActivity extends DaggerAppCompatActivity {
       default:
         return super.onOptionsItemSelected(item);
     }
+  }
+
+  private BottomNavigationView.OnNavigationItemSelectedListener getBottomTabSelectionListener() {
+    return new OnNavigationItemSelectedListener() {
+      @Override
+      public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Fragment selectedFragment = null;
+
+        switch (item.getItemId()) {
+          case R.id.nav_tasks:
+            selectedFragment = homeScreenFragment;
+            break;
+
+          case R.id.nav_calendar:
+            selectedFragment = new CalendarFragment();
+            break;
+
+          case R.id.nav_rewards:
+            selectedFragment = new RewardsFragment();
+            break;
+        }
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.main_container, selectedFragment).commit();
+
+        return true;
+      }
+    };
   }
 
   private void showHomeScreenFragment() {

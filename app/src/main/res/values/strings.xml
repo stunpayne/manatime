@@ -19,5 +19,7 @@
   <string name="tasks">Tasks</string>
   <string name="calendar">Calendar</string>
   <string name="rewards">Rewards</string>
+  <string name="see_your_cal">You can see your Calendar here!</string>
+  <string name="see_your_rewards">You can see your Rewards here!</string>
 
 </resources>

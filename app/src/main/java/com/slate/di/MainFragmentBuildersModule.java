@@ -1,7 +1,9 @@
 package com.slate.di;
 
+import com.slate.fragments.CalendarFragment;
 import com.slate.fragments.CreateTaskFragment;
 import com.slate.fragments.HomeScreenFragment;
+import com.slate.fragments.RewardsFragment;
 import com.slate.fragments.SignInFragment;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -17,4 +19,10 @@ public abstract class MainFragmentBuildersModule {
 
   @ContributesAndroidInjector
   abstract HomeScreenFragment contributeHomeScreenFragment();
+
+  @ContributesAndroidInjector
+  abstract CalendarFragment contributeCalendarFragment();
+
+  @ContributesAndroidInjector
+  abstract RewardsFragment contributeRewardsFragment();
 }
