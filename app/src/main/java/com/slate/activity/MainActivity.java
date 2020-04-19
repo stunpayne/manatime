@@ -4,20 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder;
 import com.slate.common.Constants;
 import com.slate.fragments.CreateTaskFragment;
 import com.slate.fragments.HomeScreenFragment;
@@ -28,7 +23,6 @@ import com.slate.service.SlateService;
 import com.slate.user.SignInHandler;
 import com.slate.user.UserPermission;
 import dagger.android.support.DaggerAppCompatActivity;
-import java.util.ArrayList;
 import java.util.Optional;
 import javax.inject.Inject;
 
@@ -80,7 +74,7 @@ public class MainActivity extends DaggerAppCompatActivity {
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.main_menu, menu);
+    getMenuInflater().inflate(R.menu.options_menu, menu);
     return super.onCreateOptionsMenu(menu);
   }
 

@@ -16,5 +16,8 @@
   <string name="dl_time_fill">%s:%s:%s</string>
   <string name="create_task_button">SKED TASK</string>
   <string name="sign_out">Sign Out</string>
+  <string name="tasks">Tasks</string>
+  <string name="calendar">Calendar</string>
+  <string name="rewards">Rewards</string>
 
 </resources>
