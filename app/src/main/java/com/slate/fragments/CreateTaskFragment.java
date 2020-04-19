@@ -17,6 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 import com.slate.activity.R;
+import com.slate.common.Constants;
+import com.slate.common.Constants.Files;
+import com.slate.common.FileUtil;
 import com.slate.models.task.Task;
 import com.slate.models.user.SignedInUser;
 import com.slate.service.SchedulingOrchestrator;
@@ -152,6 +155,7 @@ public class CreateTaskFragment extends DaggerDialogFragment implements OnTimeSe
       Log.d(TAG, "getButtonOnClickListener: Task attributed received!");
 
       this.schedulingOrchestrator.scheduleTask(signedInUser.getEmail(), newTask);
+      FileUtil.writeToFile(getActivity(), Files.tasks, newTask.toString());
       Toast.makeText(getActivity(), EVENT_SCHEDULED, Toast.LENGTH_SHORT).show();
       dismiss();
     };
