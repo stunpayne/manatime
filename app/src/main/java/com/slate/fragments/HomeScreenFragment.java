@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.slate.activity.R;
 import com.slate.dao.TaskDao;
+import com.slate.models.task.Task;
 import dagger.android.support.DaggerFragment;
+import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,10 +44,20 @@ public class HomeScreenFragment extends DaggerFragment {
   public void onStart() {
     super.onStart();
     setNewTaskButtonListener();
+    createTaskFragments();
   }
 
   private void setNewTaskButtonListener() {
     Optional.ofNullable(getActivity().findViewById(R.id.create_task_button))
         .ifPresent(view -> ((View) view).setOnClickListener(createTaskButtonListener));
+  }
+
+  private void createTaskFragments() {
+    List<Task> allTasks = taskDao.getAllTasks();
+    allTasks.forEach(task -> {
+      getChildFragmentManager().beginTransaction()
+          .add(R.id.task_list_container, new CheckableTaskFragment(task), "F" + task.getId())
+          .commit();
+    });
   }
 }

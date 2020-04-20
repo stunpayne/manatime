@@ -1,6 +1,7 @@
 package com.slate.di;
 
 import com.slate.fragments.CalendarFragment;
+import com.slate.fragments.CheckableTaskFragment;
 import com.slate.fragments.CreateTaskFragment;
 import com.slate.fragments.HomeScreenFragment;
 import com.slate.fragments.RewardsFragment;
@@ -25,4 +26,7 @@ public abstract class MainFragmentBuildersModule {
 
   @ContributesAndroidInjector
   abstract RewardsFragment contributeRewardsFragment();
+
+  @ContributesAndroidInjector
+  abstract CheckableTaskFragment contributeCheckableTaskFragment();
 }
