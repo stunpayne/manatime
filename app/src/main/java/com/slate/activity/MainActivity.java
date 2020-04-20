@@ -1,6 +1,5 @@
 package com.slate.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +16,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 import com.slate.common.Constants;
+import com.slate.dao.TaskDao;
 import com.slate.fragments.CalendarFragment;
 import com.slate.fragments.CreateTaskFragment;
 import com.slate.fragments.HomeScreenFragment;
@@ -28,10 +28,6 @@ import com.slate.service.SlateService;
 import com.slate.user.SignInHandler;
 import com.slate.user.UserPermission;
 import dagger.android.support.DaggerAppCompatActivity;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Optional;
 import javax.inject.Inject;
 
@@ -54,6 +50,9 @@ public class MainActivity extends DaggerAppCompatActivity {
   @Inject
   SchedulingOrchestrator schedulingOrchestrator;
 
+  @Inject
+  TaskDao taskDao;
+
   private SignedInUser signedInUser;
 
   @Inject
@@ -68,7 +67,7 @@ public class MainActivity extends DaggerAppCompatActivity {
   public View.OnClickListener createTaskButtonListener() {
     return v -> {
       Log.d(TAG, "showCreateTaskDialogCallback!");
-      new CreateTaskFragment(schedulingOrchestrator, signedInUser)
+      new CreateTaskFragment(schedulingOrchestrator, signedInUser, taskDao)
           .show(getSupportFragmentManager(), "create_task_dialog");
     };
   }
@@ -96,10 +95,11 @@ public class MainActivity extends DaggerAppCompatActivity {
     //  Request calendar permissions from the user
     UserPermission.requestCalendarPermissions(this);
 
-    Optional<GoogleSignInAccount> googleSignInAccount = Optional
+    Optional<SignedInUser> signedInUserOptional = Optional
         .ofNullable(slateService.checkForLogin(this));
 
-    if (googleSignInAccount.isPresent()) {
+    if (signedInUserOptional.isPresent()) {
+      this.signedInUser = signedInUserOptional.get();
       showHomeScreenFragment();
     } else {
       showSignInFragment();

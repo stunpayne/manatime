@@ -11,6 +11,7 @@ import com.slate.activity.R;
 import com.slate.models.calendar.Calendar;
 import com.slate.models.calendar.CalendarEvent;
 import com.slate.models.calendar.CalendarEventRequest;
+import com.slate.models.user.GoogleUser;
 import com.slate.models.user.SignedInUser;
 import com.slate.service.calendar.CalendarService;
 import com.slate.user.SignInHandler;
@@ -40,11 +41,13 @@ public class SlateService {
   /**
    * Perform all activities needed to be done at the beginning of the app start.
    */
-  public final GoogleSignInAccount checkForLogin(Activity activity) {
+  public final SignedInUser checkForLogin(Activity activity) {
     // Check for existing Google Sign In account, if the user is already signed in
     // the GoogleSignInAccount will be non-null.
     this.account = GoogleSignIn.getLastSignedInAccount(activity);
-    return this.account;
+    return Optional.ofNullable(account)
+        .map(acc -> GoogleUser.builder().account(acc).build())
+        .orElse(null);
   }
 
   public final SignedInUser handleSignIn(Intent intent, Activity activity) {

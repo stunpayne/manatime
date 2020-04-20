@@ -50,7 +50,7 @@ public class SchedulingOrchestrator {
    *              calendar and for scheduling the new task
    * @param task  the new task to schedule on the calendar
    */
-  public void scheduleTask(String email, Task task) {
+  public CalendarEvent scheduleTask(String email, Task task) {
     //  Get the user's calendar
     Calendar primaryCalendar = calendarService.getPrimaryCalendar(email);
 
@@ -70,6 +70,7 @@ public class SchedulingOrchestrator {
     //  Make an entry into the calendar
     CalendarEvent scheduledEvent = calendarService.addCalendarEvent(eventToSchedule);
     Log.d(TAG, "Scheduled event: " + scheduledEvent);
+    return scheduledEvent;
   }
 
   private CalendarEvent scheduleAndGetEvent(String email, Task task, List<Slot> timeSlots,

@@ -1,6 +1,7 @@
 package com.slate.models.task;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * A schedulable task object. This class contains all the information about a task that is needed to
@@ -8,6 +9,7 @@ import java.util.Date;
  */
 public class Task {
 
+  private String id;
   private String name;
   private TaskType taskType;
   private String description;
@@ -18,8 +20,16 @@ public class Task {
 
   private Reward reward;
 
+  public Task() {
+    this.id = "TASK" + String.valueOf(System.currentTimeMillis());
+  }
+
   public static Builder builder() {
     return new Builder();
+  }
+
+  public String getId() {
+    return id;
   }
 
   public String getName() {

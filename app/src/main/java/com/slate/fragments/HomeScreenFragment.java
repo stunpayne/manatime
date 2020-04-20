@@ -3,11 +3,13 @@ package com.slate.fragments;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.slate.activity.R;
+import com.slate.dao.TaskDao;
 import dagger.android.support.DaggerFragment;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -18,10 +20,13 @@ public class HomeScreenFragment extends DaggerFragment {
   private static final String TAG = HomeScreenFragment.class.getSimpleName();
 
   private final View.OnClickListener createTaskButtonListener;
+  private final TaskDao taskDao;
 
   @Inject
-  public HomeScreenFragment(@Named("CREATE_TASK") View.OnClickListener createTaskButtonListener) {
+  public HomeScreenFragment(@Named("CREATE_TASK") OnClickListener createTaskButtonListener,
+      TaskDao taskDao) {
     this.createTaskButtonListener = createTaskButtonListener;
+    this.taskDao = taskDao;
   }
 
   @Nullable

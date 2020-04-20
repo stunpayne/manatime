@@ -6,6 +6,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import com.slate.activity.MainActivity;
+import com.slate.dao.InternalStorageTaskDao;
+import com.slate.dao.TaskDao;
 import com.slate.service.SharedPrefManager;
 import com.slate.service.SimpleSharedPrefManager;
 import com.slate.service.calendar.CalendarService;
@@ -62,6 +64,12 @@ public class AppModule {
   @Singleton
   static SharedPrefManager provideSharedPrefManager(Context context) {
     return new SimpleSharedPrefManager(context);
+  }
+
+  @Provides
+  @Singleton
+  static TaskDao provideTaskDao(Context context) {
+    return new InternalStorageTaskDao(context);
   }
 
   @Named("CREATE_TASK")

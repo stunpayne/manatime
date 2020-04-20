@@ -7,6 +7,6 @@ public class Constants {
 	}
 
 	public static final class Files {
-		public static final String tasks = "tasklist.txt";
+		public static final String TASK_FILE_NAME = "tasklist.txt";
 	}
 }
