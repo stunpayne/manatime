@@ -133,29 +133,26 @@ public class MainActivity extends DaggerAppCompatActivity {
   }
 
   private BottomNavigationView.OnNavigationItemSelectedListener getBottomTabSelectionListener() {
-    return new OnNavigationItemSelectedListener() {
-      @Override
-      public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Fragment selectedFragment = null;
+    return item -> {
+      Fragment selectedFragment = null;
 
-        switch (item.getItemId()) {
-          case R.id.nav_tasks:
-            selectedFragment = homeScreenFragment;
-            break;
+      switch (item.getItemId()) {
+        case R.id.nav_tasks:
+          selectedFragment = homeScreenFragment;
+          break;
 
-          case R.id.nav_calendar:
-            selectedFragment = new CalendarFragment();
-            break;
+        case R.id.nav_calendar:
+          selectedFragment = new CalendarFragment();
+          break;
 
-          case R.id.nav_rewards:
-            selectedFragment = new RewardsFragment();
-            break;
-        }
-        getSupportFragmentManager().beginTransaction()
-            .replace(R.id.main_container, selectedFragment).commit();
-
-        return true;
+        case R.id.nav_rewards:
+          selectedFragment = new RewardsFragment();
+          break;
       }
+      getSupportFragmentManager().beginTransaction()
+          .replace(R.id.main_container, selectedFragment).commit();
+
+      return true;
     };
   }
 

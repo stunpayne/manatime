@@ -47,13 +47,13 @@ public class InternalStorageTaskDao implements TaskDao {
   @Override
   public boolean updateTask(String taskId, Task task) {
     taskMap.put(taskId, task);
-    return true;
+    return FileUtil.writeObjectToFile(context, Files.TASK_FILE_NAME, taskMap);
   }
 
   @Override
   public boolean deleteTask(String taskId) {
     taskMap.remove(taskId);
-    return true;
+    return FileUtil.writeObjectToFile(context, Files.TASK_FILE_NAME, taskMap);
   }
 
   /**

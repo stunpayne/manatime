@@ -1,7 +1,6 @@
 package com.slate.models.task;
 
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * A schedulable task object. This class contains all the information about a task that is needed to
@@ -19,9 +18,10 @@ public class Task {
   private Importance importance;
 
   private Reward reward;
+  private boolean completed;
 
   public Task() {
-    this.id = "TASK" + String.valueOf(System.currentTimeMillis());
+    this.id = "TASK" + System.currentTimeMillis();
   }
 
   public static Builder builder() {
@@ -64,6 +64,14 @@ public class Task {
     return reward;
   }
 
+  public boolean isCompleted() {
+    return completed;
+  }
+
+  public void markCompleted() {
+    this.completed = true;
+  }
+
   public static final class Builder {
 
     private String name;
@@ -73,6 +81,7 @@ public class Task {
     private Long durationMinutes;
     private Importance importance;
     private Reward reward;
+    private boolean completed;
 
     private Builder() {
     }
@@ -112,6 +121,11 @@ public class Task {
       return this;
     }
 
+    public Builder completed(boolean completed) {
+      this.completed = completed;
+      return this;
+    }
+
     public Task build() {
       Task task = new Task();
       task.taskType = this.taskType;
@@ -121,17 +135,19 @@ public class Task {
       task.reward = this.reward;
       task.name = this.name;
       task.importance = this.importance;
+      task.completed = this.completed;
       return task;
     }
   }
 
   @Override
   public String toString() {
-    return "{\"name\" : " + (name == null ? null : "\"" + name + "\"") + ",\"taskType\" : " + (
-        taskType == null ? null : taskType) + ",\"description\" : " + (description == null ? null
-        : "\"" + description + "\"") + ",\"deadline\" : " + (deadline == null ? null : deadline)
-        + ",\"durationMinutes\" : " + (durationMinutes == null ? null : durationMinutes)
-        + ",\"importance\" : " + (importance == null ? null : importance) + ",\"reward\" : " + (
-        reward == null ? null : reward) + "}";
+    return "{\"id\" : " + (id == null ? null : "\"" + id + "\"") + ",\"name\" : " + (name == null
+        ? null : "\"" + name + "\"") + ",\"taskType\" : " + (taskType == null ? null : taskType)
+        + ",\"description\" : " + (description == null ? null : "\"" + description + "\"")
+        + ",\"deadline\" : " + (deadline == null ? null : deadline) + ",\"durationMinutes\" : " + (
+        durationMinutes == null ? null : durationMinutes) + ",\"importance\" : " + (
+        importance == null ? null : importance) + ",\"reward\" : " + (reward == null ? null
+        : reward) + ",\"completed\" : " + completed + "}";
   }
 }

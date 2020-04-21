@@ -14,13 +14,12 @@ import com.slate.models.task.Task;
 import dagger.android.support.DaggerFragment;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 public class HomeScreenFragment extends DaggerFragment {
-
-  private static final String TAG = HomeScreenFragment.class.getSimpleName();
-
+  
   private final View.OnClickListener createTaskButtonListener;
   private final TaskDao taskDao;
 
@@ -55,9 +54,21 @@ public class HomeScreenFragment extends DaggerFragment {
   private void createTaskFragments() {
     List<Task> allTasks = taskDao.getAllTasks();
     allTasks.forEach(task -> {
-      getChildFragmentManager().beginTransaction()
-          .add(R.id.task_list_container, new CheckableTaskFragment(task), "F" + task.getId())
-          .commit();
+      if (!task.isCompleted()) {
+        getChildFragmentManager().beginTransaction()
+            .add(R.id.task_list_container,
+                new CheckableTaskFragment(task, getTaskCompletionCallback()),
+                "F" + task.getId())
+            .commit();
+      }
     });
+  }
+
+  private Function<Task, Void> getTaskCompletionCallback() {
+    return task -> {
+      taskDao.updateTask(task.getId(), task);
+      createTaskFragments();
+      return null;
+    };
   }
 }
