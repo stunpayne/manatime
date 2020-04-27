@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import com.slate.activity.R;
 import com.slate.dao.TaskDao;
 import com.slate.models.task.Task;
@@ -19,7 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 public class HomeScreenFragment extends DaggerFragment {
-  
+
   private final View.OnClickListener createTaskButtonListener;
   private final TaskDao taskDao;
 
@@ -55,7 +58,22 @@ public class HomeScreenFragment extends DaggerFragment {
     List<Task> allTasks = taskDao.getAllTasks();
     allTasks.forEach(task -> {
       if (!task.isCompleted()) {
-        getChildFragmentManager().beginTransaction()
+        FragmentManager fragmentManager = getChildFragmentManager();
+
+        //  Clear the current task list
+        FragmentTransaction removeTxn = fragmentManager.beginTransaction();
+        removeTxn.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right);
+        for (Fragment fragment : fragmentManager.getFragments()) {
+          if (fragment != null) {
+            removeTxn.remove(fragment);
+          }
+        }
+        removeTxn.commit();
+
+        //  Add back the incomplete transactions
+        FragmentTransaction addTxn = fragmentManager.beginTransaction();
+        addTxn.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right);
+        addTxn
             .add(R.id.task_list_container,
                 new CheckableTaskFragment(task, getTaskCompletionCallback()),
                 "F" + task.getId())
